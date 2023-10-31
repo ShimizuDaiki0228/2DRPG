@@ -1,0 +1,57 @@
+{
+    "currency": 100,
+    "skillTree": {
+        "keys": [],
+        "values": []
+    },
+    "inventory": {
+        "keys": [
+            "d142e031d4e72714782eca794dcb3b3a",
+            "0a808737b92dff946935cfc2b5f5cbd5"
+        ],
+        "values": [
+            1,
+            1
+        ]
+    },
+    "equipmentId": [],
+    "checkpoints": {
+        "keys": [
+            "8d28a093-ec91-4594-8490-2569d2a12ff4",
+            "7779dcd7-559e-4192-8175-b793c75c3cd3"
+        ],
+        "values": [
+            false,
+            false
+        ]
+    },
+    "closestCheckpointId": "",
+    "descriptionPoints": {
+        "keys": [
+            "0c1c4945-681c-4e1b-9483-bebb0dfe6060",
+            "34706273-21b1-4db5-8995-37cc8f09edbf",
+            "e8ff0a49-1a87-4255-9688-ff3b92425cba"
+        ],
+        "values": [
+            true,
+            true,
+            true
+        ]
+    },
+    "descriptionPointId": "",
+    "lostCurrencyX": 11.490188598632813,
+    "lostCurrencyY": -1.7597202062606812,
+    "lostCurrencyAmount": 0,
+    "isFirstTutorial": false,
+    "isMenuUsing": true,
+    "volumeSettings": {
+        "keys": [
+            "sfx",
+            "bgm"
+        ],
+        "values": [
+            1.0,
+            1.0
+        ]
+    }
+}
