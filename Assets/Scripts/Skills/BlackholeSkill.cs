@@ -24,7 +24,9 @@ public class BlackholeSkill : Skill
     private void UnlockBlackHole()
     {
         if (blackHoleUnlockButton.unlocked)
+        {
             blackHoleUnloced = true;
+        }
     }
 
     public override bool CanUseSkill()

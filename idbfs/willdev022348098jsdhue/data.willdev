@@ -1,15 +1,17 @@
 {
-    "currency": 100,
+    "currency": 0,
     "skillTree": {
         "keys": [],
         "values": []
     },
     "inventory": {
         "keys": [
+            "afc7d68d43673b444914237c15393db5",
             "d142e031d4e72714782eca794dcb3b3a",
             "0a808737b92dff946935cfc2b5f5cbd5"
         ],
         "values": [
+            1,
             1,
             1
         ]
@@ -39,10 +41,10 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 11.490188598632813,
-    "lostCurrencyY": -1.7597202062606812,
-    "lostCurrencyAmount": 0,
-    "isFirstTutorial": false,
+    "lostCurrencyX": 27.9284725189209,
+    "lostCurrencyY": -0.7537455558776856,
+    "lostCurrencyAmount": 700,
+    "isFirstTutorial": true,
     "isMenuUsing": true,
     "volumeSettings": {
         "keys": [
