@@ -23,8 +23,6 @@ public class DashSkill : Skill
     public override void UseSkill()
     {
         base.UseSkill();
-
-        Debug.Log("created clone behind");
     }
 
     protected override void Start()
@@ -84,6 +82,13 @@ public class DashSkill : Skill
     private void InstantiateDashEffect(Vector3 position, Vector3 rotation)
     {
         Vector3 reverseRotation = new Vector3(rotation.x, rotation.y + 180, rotation.z);
-        Instantiate(_dashEffect, position, Quaternion.Euler(reverseRotation));
+        GameObject effect = Instantiate(_dashEffect, position, Quaternion.Euler(reverseRotation));
+
+        ParticleSystem particleSystem = effect.GetComponent<ParticleSystem>();
+
+        if(particleSystem != null)
+        {
+            Destroy(effect, particleSystem.main.duration);
+        }
     }
 }
