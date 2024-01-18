@@ -108,6 +108,9 @@ public class Player : Entity
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             Inventory.instance.UseFlask();
+
+        //if (Input.GetKeyDown(KeyCode.G))
+        //    InstantiateDashEffect();
     }
 
     public override void SlowEntityBy(float _slowPercentage, float _slowDuration)
@@ -184,5 +187,4 @@ public class Player : Entity
     {
         knockbackPower = new Vector2(0, 0);
     }
-
 }

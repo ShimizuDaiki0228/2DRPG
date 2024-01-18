@@ -17,6 +17,9 @@ public class DashSkill : Skill
     [SerializeField] private UI_SkillTreeSlot cloneOnArrivalUnlockButton;
     public bool cloneOnArrivalUnlocked { get; private set; }
 
+    [SerializeField]
+    private GameObject _dashEffect;
+
     public override void UseSkill()
     {
         base.UseSkill();
@@ -60,15 +63,27 @@ public class DashSkill : Skill
     }
 
 
-    public void CloneOnDash()
+    public void CloneOnDash(Vector3 position, Vector3 rotation)
     {
         if (cloneOnDashUnlocked)
+        {
             SkillManager.instance.clone.CreateClone(player.transform, Vector3.zero);
+            InstantiateDashEffect(position, rotation);
+        }
     }
 
     public void CloneOnArrival()
     {
         if(cloneOnArrivalUnlocked)
             SkillManager.instance.clone.CreateClone(player.transform, Vector3.zero);
+    }
+
+    /// <summary>
+    /// ダッシュ時のエフェクトを生成する
+    /// </summary>
+    private void InstantiateDashEffect(Vector3 position, Vector3 rotation)
+    {
+        Vector3 reverseRotation = new Vector3(rotation.x, rotation.y + 180, rotation.z);
+        Instantiate(_dashEffect, position, Quaternion.Euler(reverseRotation));
     }
 }

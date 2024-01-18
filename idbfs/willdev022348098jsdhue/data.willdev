@@ -1,33 +1,83 @@
 {
     "currency": 0,
     "skillTree": {
-        "keys": [],
-        "values": []
+        "keys": [
+            "Dodge",
+            "Dash",
+            "Multiple distruction",
+            "Blackhole",
+            "Chain saw sword",
+            "Dash - \"Actually here I am\"",
+            "Bouncy sword",
+            "Bullet sword",
+            "Dodge mirage",
+            "Crystal ",
+            "Mirage blink",
+            "Explosion",
+            "Controlled destruction",
+            "Multiple mirage",
+            "Restore with parry",
+            "Dash - \"Hre I am\"",
+            "Crystal mirage",
+            "Agrresive mirage",
+            "Parry",
+            "Time stop",
+            "Time mirage",
+            "Vulnerability",
+            "Parry with a mirage",
+            "Sword Throw"
+        ],
+        "values": [
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            true,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+        ]
     },
     "inventory": {
         "keys": [
-            "afc7d68d43673b444914237c15393db5",
-            "d142e031d4e72714782eca794dcb3b3a",
-            "0a808737b92dff946935cfc2b5f5cbd5"
+            "417adddd880462d4f936cbaa70204191",
+            "afc7d68d43673b444914237c15393db5"
         ],
         "values": [
-            1,
-            1,
-            1
+            2,
+            2
         ]
     },
     "equipmentId": [],
     "checkpoints": {
         "keys": [
             "8d28a093-ec91-4594-8490-2569d2a12ff4",
-            "7779dcd7-559e-4192-8175-b793c75c3cd3"
+            "7779dcd7-559e-4192-8175-b793c75c3cd3",
+            "0874b36d-1359-4d49-8584-3892440e1136"
         ],
         "values": [
-            false,
-            false
+            true,
+            true,
+            true
         ]
     },
-    "closestCheckpointId": "",
+    "closestCheckpointId": "0874b36d-1359-4d49-8584-3892440e1136",
     "descriptionPoints": {
         "keys": [
             "0c1c4945-681c-4e1b-9483-bebb0dfe6060",
@@ -41,9 +91,9 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 27.9284725189209,
-    "lostCurrencyY": -0.7537455558776856,
-    "lostCurrencyAmount": 700,
+    "lostCurrencyX": 89.67627716064453,
+    "lostCurrencyY": 0.24620263278484345,
+    "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,
     "volumeSettings": {

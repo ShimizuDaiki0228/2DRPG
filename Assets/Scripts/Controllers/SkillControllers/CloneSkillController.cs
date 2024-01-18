@@ -41,6 +41,8 @@ public class CloneSkillController : MonoBehaviour
 
     public void SetupClone(Transform _newTransform, float _cloneDuration, bool _canAttack, Vector3 _offset, Transform _closestEnemy, bool _canDuplicate, float _chanceToDuplicate, Player _player, float _attackMultiplier)
     {
+        Debug.Log("Clone");
+        Debug.Log(_canAttack);
         if (_canAttack)
             anim.SetInteger("AttackNumber", Random.Range(1, 3));
 
