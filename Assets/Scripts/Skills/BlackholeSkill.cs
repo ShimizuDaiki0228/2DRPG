@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +20,17 @@ public class BlackholeSkill : Skill
 
     BlackholeSkillController currentBlackHole;
 
+    /// <summary>
+    /// ブラックホール周りに波動のようなエフェクトを出す
+    /// </summary>
+    [SerializeField]
+    private GameObject _blackHoleEffect;
 
+    /// <summary>
+    /// ブラックホールが消えた時に生成するエフェクト
+    /// </summary>
+    [SerializeField]
+    private GameObject _blackHoleEndEffect;
 
     private void UnlockBlackHole()
     {
@@ -34,11 +45,16 @@ public class BlackholeSkill : Skill
         return base.CanUseSkill();
     }
 
-    public override void UseSkill()
+    public override async void UseSkill()
     {
         base.UseSkill();
 
         GameObject newBlackHole = Instantiate(blackHolePrefab, player.transform.position, Quaternion.identity);
+        GameObject blackHoleAura = Instantiate(_blackHoleEffect, newBlackHole.transform.position, Quaternion.identity);
+        EffectDestroy(blackHoleAura);
+
+        Vector3 blackHolePosition = newBlackHole.transform.position;
+        //blackHolePosition.y = 0;
 
         currentBlackHole = newBlackHole.GetComponent<BlackholeSkillController>();
 
@@ -46,6 +62,24 @@ public class BlackholeSkill : Skill
 
         AudioManager.instance.PlaySFX(18, player.transform);
         AudioManager.instance.PlaySFX(19, player.transform);
+
+        await UniTask.WaitForSeconds(blackholeDuration+0.3f);
+
+        GameObject endEffect = Instantiate(_blackHoleEndEffect, blackHolePosition, Quaternion.identity);
+        EffectDestroy(endEffect);
+    }
+
+    /// <summary>
+    /// エフェクトをライフタイム終わりに破棄する
+    /// </summary>
+    private void EffectDestroy(GameObject effect)
+    {
+        ParticleSystem particleSystem = effect.GetComponent<ParticleSystem>();
+
+        if (particleSystem != null)
+        {
+            Destroy(effect, particleSystem.main.duration);
+        }
     }
 
     protected override void Start()

@@ -5,8 +5,12 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+
 public class Player : Entity
 {
+    [Header("Image")]
+    public SpriteRenderer playerRenderer;
+
     [Header("Attack details")]
     public Vector2[] attackMovement;
     public float counterAttackDuration = 0.2f;
@@ -53,12 +57,34 @@ public class Player : Entity
 
     public PlayerBlackholeState blackHole { get; private set; }
     public PlayerDeadState deadState { get; private set; }
+    public PlayerStageMoveState stageMoveState { get; private set; }
+
+    /// <summary>
+    /// ゲートの入る方
+    /// </summary>
+    [SerializeField]
+    private GameObject[] _admissionGate;
+
+    private Dictionary<GameObject, int> _admissionGateIndexMap = new Dictionary<GameObject, int>();
+
+    /// <summary>
+    /// ゲートの出るほう
+    /// </summary>
+    [SerializeField]
+    private GameObject[] _exitGate;
+
+    public int gateNumber;
 
     protected override void Awake()
     {
         base.Awake();
 
         fx = GetComponent<PlayerFX>();
+
+        for(int i = 0; i < _admissionGate.Length; i++)
+        {
+            _admissionGateIndexMap[_admissionGate[i]] = i;
+        }
 
         stateMachine = new PlayerStateMachine();
 
@@ -77,6 +103,8 @@ public class Player : Entity
         catchSword = new PlayerCatchSwordState(this, stateMachine, "CatchSword");
         blackHole = new PlayerBlackholeState(this, stateMachine, "Jump");
         deadState = new PlayerDeadState(this, stateMachine, "Die");
+
+        stageMoveState = new PlayerStageMoveState(this, stateMachine, "Jump", _exitGate);
     }
 
     protected override void Start()
@@ -90,6 +118,7 @@ public class Player : Entity
         defaultMoveSpeed = moveSpeed;
         defaultJumpForce = jumpForce;
         defaultDashSpeed = dashSpeed;
+
     }
 
     protected override void Update()
@@ -108,6 +137,9 @@ public class Player : Entity
 
         if (Input.GetKeyDown(KeyCode.Alpha1))
             Inventory.instance.UseFlask();
+
+        if(Input.GetKeyDown(KeyCode.G))
+            stateMachine.ChangeState(stageMoveState);
     }
 
     public override void SlowEntityBy(float _slowPercentage, float _slowDuration)
@@ -183,5 +215,25 @@ public class Player : Entity
     protected override void SetupZeroKnockbackPower()
     {
         knockbackPower = new Vector2(0, 0);
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.tag == "Gate")
+        {
+            if(transform.position.x > collision.transform.position.x - 0.1f
+                && collision.transform.position.x + 0.1f > transform.position.x)
+            {
+                if (_admissionGateIndexMap.TryGetValue(collision.gameObject, out int _index))
+                {
+                    gateNumber = _index;
+                }
+                else
+                    return;
+
+                rb.velocity = Vector2.zero;
+                stateMachine.ChangeState(stageMoveState);
+            }
+        }
     }
 }

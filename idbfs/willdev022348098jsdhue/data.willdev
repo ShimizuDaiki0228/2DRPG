@@ -1,5 +1,5 @@
 {
-    "currency": 0,
+    "currency": 100,
     "skillTree": {
         "keys": [
             "Dodge",
@@ -31,7 +31,7 @@
             false,
             true,
             false,
-            false,
+            true,
             false,
             false,
             false,
@@ -48,7 +48,7 @@
             false,
             false,
             false,
-            false,
+            true,
             false,
             false,
             false
@@ -60,8 +60,8 @@
             "afc7d68d43673b444914237c15393db5"
         ],
         "values": [
-            6,
-            6
+            79,
+            79
         ]
     },
     "equipmentId": [],
@@ -91,8 +91,8 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 95.00462341308594,
-    "lostCurrencyY": 3.2460970878601076,
+    "lostCurrencyX": 93.71930694580078,
+    "lostCurrencyY": 2.246262311935425,
     "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,
