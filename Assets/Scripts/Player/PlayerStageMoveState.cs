@@ -1,6 +1,9 @@
+using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 public class PlayerStageMoveState : PlayerState
@@ -25,24 +28,58 @@ public class PlayerStageMoveState : PlayerState
     private const float FADE_DURATION = 2.0f;
 
     /// <summary>
+    /// 画面がフェードアウトするのを待つ時間
+    /// 実際にはこの値を変えることでフェードアウトの時間が変わるわけではない
+    /// </summary>
+    private const float UI_FADEOUT_DURATION = 2.0f;
+
+    /// <summary>
+    /// 画面がフェードインするのを待つ時間
+    /// 実際にはこの値を変えることでフェードインの時間が変わるわけではない
+    /// </summary>
+    private const float UI_FADEIN_DURATION = 0.3f;
+
+    /// <summary>
     /// 出てくる方のゲート
     /// </summary>
-    private GameObject[] exitGate;
+    private GameObject[] _exitGate;
+
+    private Subject<string> onFadeSubject = new Subject<string>();
+    public IObservable<string> OnFadeObservable => onFadeSubject.AsObservable();
 
     public PlayerStageMoveState(Player _player, PlayerStateMachine _stateMachine, string _animBoolName, GameObject[] _exitGate) : base(_player, _stateMachine, _animBoolName)
     {
-        exitGate = _exitGate;
+        this._exitGate = _exitGate;
 
-        foreach (var gate in exitGate)
+        foreach (var gate in this._exitGate)
         {
-            Transform gateChildren = gate.GetComponentInChildren<Transform>();
+            ChildDOScale(gate, 0 , 0);
 
-            foreach (Transform gateChild in gateChildren)
-            {
-                gateChild.DOScale(0, 0);
-            }
-            
         }
+    }
+
+    /// <summary>
+    /// 子要素の大きさを変更する
+    /// ゲートは子要素として存在するため
+    /// </summary>
+    /// <param name="gate"></param>
+    private async UniTask ChildDOScale(GameObject gate, float scale , float duration)
+    {
+        Transform[] gateChildren = gate.GetComponentsInChildren<Transform>();
+
+        List<UniTask> tasks = new List<UniTask>();
+        foreach (Transform gateChild in gateChildren)
+        {
+            // 各アニメーションを開始し、タスクをリストに追加
+            // ここではawaitしないため、すぐに次のアニメーションに進む
+            tasks.Add(
+                gateChild.DOScale(scale, duration)
+                .SetEase(Ease.OutCirc)
+                .ToUniTask());
+        }
+
+        // 全てのアニメーションが完了するまで待機
+        await UniTask.WhenAll(tasks);
     }
 
     public override async void Enter()
@@ -54,8 +91,10 @@ public class PlayerStageMoveState : PlayerState
         rb.gravityScale = 0;
         renderer = player.playerRenderer;
 
-        Sequence sequence = DOTween.Sequence();
-        sequence
+        Sequence beforeMoveSequence = DOTween.Sequence();
+        Sequence afterMoveSequence = DOTween.Sequence();
+
+        beforeMoveSequence
             .Append(player.transform.DOLocalMoveY(
                         player.transform.localPosition.y + 2.5f,
                         flyTime
@@ -66,17 +105,30 @@ public class PlayerStageMoveState : PlayerState
                         player.transform.localPosition.y + 2.3f,
                         DELAY_FADE_DURATION
                     )
-            )
-            .Append(renderer.DOFade(0f, FADE_DURATION))
-            .Append(player.transform.DOLocalMove(
-                        exitGate[player.gateNumber].transform.position,
+            );
+            
+
+        await beforeMoveSequence.AsyncWaitForCompletion();
+
+        renderer.DOFade(0f, FADE_DURATION);
+        onFadeSubject.OnNext("fadeOut");
+        await UniTask.WaitForSeconds(UI_FADEOUT_DURATION);
+
+
+        onFadeSubject.OnNext("fadeIn");
+        await UniTask.WaitForSeconds(UI_FADEIN_DURATION);
+
+        GameObject exitGate = _exitGate[player.gateNumber];
+
+        player.transform.DOLocalMove(
+                        exitGate.transform.position + new Vector3(0, -1, 0),
                         0f
-                    )
-            )
-            .Append(renderer.DOFade(1f, FADE_DURATION));
+        );
 
-        await sequence.AsyncWaitForCompletion();
+        await ChildDOScale(exitGate, 1 , 1);
 
+        await renderer.DOFade(1f, FADE_DURATION).ToUniTask();
+        
         stateMachine.ChangeState(player.airState);
     }
 

@@ -8,6 +8,13 @@ using UnityEngine.EventSystems;
 
 public class Player : Entity
 {
+    /// <summary>
+    /// 別のスクリプトから画面をフェードアウトさせたい場合などに使用
+    /// </summary>
+    [Header("UI")]
+    [SerializeField]
+    private UI ui;
+
     [Header("Image")]
     public SpriteRenderer playerRenderer;
 
@@ -105,6 +112,24 @@ public class Player : Entity
         deadState = new PlayerDeadState(this, stateMachine, "Die");
 
         stageMoveState = new PlayerStageMoveState(this, stateMachine, "Jump", _exitGate);
+
+        Bind();
+    }
+
+    /// <summary>
+    /// バインド
+    /// </summary>
+    private void Bind()
+    {
+        stageMoveState.OnFadeObservable
+            .Subscribe(fade =>
+            {
+                if(fade == "fadeOut")
+                    ui.FadeOut();
+                else
+                    ui.FadeIn();
+            })
+            .AddTo(this);
     }
 
     protected override void Start()

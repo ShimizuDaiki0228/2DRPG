@@ -309,7 +309,7 @@ public class UI : MonoBehaviour, ISaveManager
 
     public void SwitchOnEndScreen()
     {
-        fadeScreen.FadeOut();
+        FadeOut();
         StartCoroutine(EndScreenCoroutine());  
     }
 
@@ -346,5 +346,21 @@ public class UI : MonoBehaviour, ISaveManager
         {
             _data.volumeSettings.Add(item.parameter, item.slider.value);
         }
+    }
+
+    /// <summary>
+    /// フェードアウト
+    /// </summary>
+    public void FadeOut()
+    {
+        fadeScreen.FadeOut();
+    }
+
+    /// <summary>
+    /// フェードイン
+    /// </summary>
+    public void FadeIn()
+    {
+        fadeScreen.FadeIn();
     }
 }

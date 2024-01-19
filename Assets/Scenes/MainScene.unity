@@ -70943,6 +70943,7 @@ MonoBehaviour:
   whatisGround:
     serializedVersion: 2
     m_Bits: 8
+  ui: {fileID: 1501442928}
   playerRenderer: {fileID: 2113265096}
   attackMovement:
   - {x: 3, y: 2}
@@ -75933,7 +75934,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1493340641468008489, guid: be7567fd171cf64469e63a5a7c3577ad, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 76.75
+      value: 101.3
       objectReference: {fileID: 0}
     - target: {fileID: 1493340641468008489, guid: be7567fd171cf64469e63a5a7c3577ad, type: 3}
       propertyPath: m_LocalPosition.y
