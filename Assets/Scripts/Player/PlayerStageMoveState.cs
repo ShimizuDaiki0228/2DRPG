@@ -120,12 +120,15 @@ public class PlayerStageMoveState : PlayerState
 
         GameObject exitGate = _exitGate[player.gateNumber];
 
+
         player.transform.DOLocalMove(
                         exitGate.transform.position + new Vector3(0, -1, 0),
                         0f
         );
 
-        await ChildDOScale(exitGate, 1 , 1);
+        await UniTask.WaitForSeconds(1);
+
+        await ChildDOScale(exitGate, 1, 2);
 
         await renderer.DOFade(1f, FADE_DURATION).ToUniTask();
         

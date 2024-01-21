@@ -111,7 +111,7 @@ public class UI : MonoBehaviour, ISaveManager
     }
 
     // Update is called once per frame
-    async void Update()
+    void Update()
     {
         if (isMenuUsing)
         {

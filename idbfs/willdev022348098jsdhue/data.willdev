@@ -12,8 +12,8 @@
             "d142e031d4e72714782eca794dcb3b3a"
         ],
         "values": [
-            28,
-            28,
+            31,
+            31,
             1,
             1
         ]
@@ -42,7 +42,7 @@
     },
     "descriptionPointId": "",
     "lostCurrencyX": 101.30000305175781,
-    "lostCurrencyY": -1.7541924715042115,
+    "lostCurrencyY": -1.7538508176803589,
     "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,
