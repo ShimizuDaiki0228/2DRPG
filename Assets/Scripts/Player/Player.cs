@@ -1,13 +1,20 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.UI;
 
 public class Player : Entity
 {
+    [Header("Move area")]
+    [SerializeField] private AreaMove areaMove;
+    [SerializeField] private Sprite centerToOutGradationImage;
+    [SerializeField] private Sprite LeftToRightGradationImage;
+    [SerializeField] private Sprite RightToLeftGradationImage;
+
     /// <summary>
     /// 別のスクリプトから画面をフェードアウトさせたい場合などに使用
     /// </summary>
@@ -125,9 +132,9 @@ public class Player : Entity
             .Subscribe(fade =>
             {
                 if(fade == "fadeOut")
-                    ui.FadeOut();
+                    ui.GradationFadeOut(centerToOutGradationImage);
                 else
-                    ui.FadeIn();
+                    ui.GradationFadeIn(centerToOutGradationImage);
             })
             .AddTo(this);
     }
@@ -239,7 +246,7 @@ public class Player : Entity
         knockbackPower = new Vector2(0, 0);
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private async void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.tag == "Gate")
         {
@@ -256,6 +263,15 @@ public class Player : Entity
                 rb.velocity = Vector2.zero;
                 stateMachine.ChangeState(stageMoveState);
             }
+        }
+        
+        else if(collision.tag == "RightArea")
+        {
+            await ui.GradationFadeOut(LeftToRightGradationImage);
+            await UniTask.WaitForSeconds(2);
+            transform.position = areaMove.CollisionRightArea(collision.gameObject).Value;
+
+            ui.GradationFadeIn(RightToLeftGradationImage).Forget();
         }
     }
 }

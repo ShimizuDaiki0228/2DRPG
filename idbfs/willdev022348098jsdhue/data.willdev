@@ -7,15 +7,11 @@
     "inventory": {
         "keys": [
             "417adddd880462d4f936cbaa70204191",
-            "afc7d68d43673b444914237c15393db5",
-            "0a808737b92dff946935cfc2b5f5cbd5",
-            "d142e031d4e72714782eca794dcb3b3a"
+            "afc7d68d43673b444914237c15393db5"
         ],
         "values": [
-            55,
-            55,
-            1,
-            1
+            86,
+            86
         ]
     },
     "equipmentId": [],
@@ -28,10 +24,10 @@
         "values": [
             true,
             true,
-            false
+            true
         ]
     },
-    "closestCheckpointId": "7779dcd7-559e-4192-8175-b793c75c3cd3",
+    "closestCheckpointId": "0874b36d-1359-4d49-8584-3892440e1136",
     "descriptionPoints": {
         "keys": [
             "34706273-21b1-4db5-8995-37cc8f09edbf"
@@ -41,8 +37,8 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 73.41865539550781,
-    "lostCurrencyY": 4.246284008026123,
+    "lostCurrencyX": 105.45977020263672,
+    "lostCurrencyY": -1.7536894083023072,
     "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,

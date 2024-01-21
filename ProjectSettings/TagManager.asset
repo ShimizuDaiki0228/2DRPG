@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Gate
   - UI
+  - RightArea
+  - LeftArea
   layers:
   - Default
   - TransparentFX
@@ -60,6 +62,9 @@ TagManager:
     locked: 0
   - name: Player
     uniqueID: 1390049235
+    locked: 0
+  - name: MoveArea
+    uniqueID: 1775711959
     locked: 0
   - name: FX
     uniqueID: 1354006107

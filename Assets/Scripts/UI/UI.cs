@@ -6,12 +6,16 @@ using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
-using UnityEngine.UIElements;
 using DG.Tweening;
 using System.Reflection;
+using UnityEngine.UI;
 
 public class UI : MonoBehaviour, ISaveManager
 {
+    [Header("Transition screen")]
+    [SerializeField] private Image transitionScreenImage;
+    [SerializeField] private TransitionScreen transitionScreen;
+
     [Header("Talk screen")]
     [SerializeField] private GameObject talkScreenBackgroundGameObject;
     [SerializeField] private CanvasGroup talkScreenBackground;
@@ -422,5 +426,23 @@ public class UI : MonoBehaviour, ISaveManager
     public void FadeIn()
     {
         fadeScreen.FadeIn();
+    }
+
+    /// <summary>
+    /// グラデーションでフェードアウトさせる際
+    /// </summary>
+    public async UniTask GradationFadeOut(Sprite sprite)
+    {
+        transitionScreenImage.sprite = sprite;
+        await transitionScreen.Animate(2);
+    }
+
+    /// <summary>
+    /// グラデーションでフェードアウトさせる際
+    /// </summary>
+    public async UniTask GradationFadeIn(Sprite sprite)
+    {
+        transitionScreenImage.sprite = sprite;
+        await transitionScreen.ReverseAnimate(2);
     }
 }
