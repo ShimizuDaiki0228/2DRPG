@@ -8,10 +8,16 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.UIElements;
 using DG.Tweening;
-using Unity.VisualScripting;
+using System.Reflection;
 
 public class UI : MonoBehaviour, ISaveManager
 {
+    [Header("Talk screen")]
+    [SerializeField] private GameObject talkScreenBackgroundGameObject;
+    [SerializeField] private CanvasGroup talkScreenBackground;
+    [SerializeField] private GameObject talkScreenPlayerGameObject;
+    [SerializeField] private RectTransform talkScreenPlayer;
+
     [Header("End screen")]
     [SerializeField] private UI_FadeScreen fadeScreen;
     [SerializeField] private GameObject endText;
@@ -46,8 +52,6 @@ public class UI : MonoBehaviour, ISaveManager
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private TextMeshProUGUI pressKeyInstructionText;
 
-
-    private bool onDescriptionDisplay = false;
     private const int DESCRIPTION_HIDDEN_WAIT_TIME = 100;
 
     //テキストが表示された時にEnterキーで閉じれるようにする
@@ -82,9 +86,8 @@ public class UI : MonoBehaviour, ISaveManager
         DescriptionManager.instance.OnDescriptionDisplayObjectAsObservable
             .Subscribe(index =>
             {
-                SwitchToDescriptionDisplay(index).Forget();
-                onDescriptionDisplay = true;
-
+                //SwitchToDescriptionDisplay(index).Forget();
+                DisplayTalkScreen().Forget();
             }).AddTo(this);
 
         if(!GameManager.instance.IsFirstTutorial)
@@ -107,7 +110,7 @@ public class UI : MonoBehaviour, ISaveManager
     }
 
     // Update is called once per frame
-    void Update()
+    async void Update()
     {
         if (isMenuUsing)
         {
@@ -123,6 +126,85 @@ public class UI : MonoBehaviour, ISaveManager
             if (Input.GetKeyDown(KeyCode.L))
                 SwitchWithKeyTo(optionsUI);
         }
+
+        if (Input.GetKeyDown(KeyCode.G))
+            await DisplayTalkScreen();
+
+        if(Input.GetKeyDown(KeyCode.F))
+            await HiddenTalkScreen();
+    }
+
+    /// <summary>
+    /// トーク画面を表示する
+    /// </summary>
+    private async UniTask DisplayTalkScreen()
+    {
+        isMenuUsing = false;
+        AudioManager.instance.StopSFX(8);
+
+        talkScreenBackground.gameObject.SetActive(true);
+        talkScreenPlayer.gameObject.SetActive(true);
+
+        //初期の透明状態にする
+        talkScreenBackground.DOFade(0, 0);
+
+        Sequence fadeSequence = DOTween.Sequence();
+
+        fadeSequence
+            .Append(talkScreenBackground.DOFade(
+                        0.5f,
+                        0.2f
+                    )
+                    .SetUpdate(true)
+            )
+            .Append(talkScreenPlayer.DOLocalMoveX(
+                        talkScreenPlayer.rect.position.x + 250,
+                        0.5f
+                    )
+                    .SetUpdate(true)
+            );
+
+        await fadeSequence.AsyncWaitForCompletion();
+
+        SwitchWithKeyTo(descriptionUI);
+        DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
+        string description = DescriptionDefinition.GetDescriptionText(0);
+        descriptionText.text = "";
+
+        await DisplayText(description);
+        PressKeyInstruction();
+
+        GameManager.instance.PauseGame(true);
+    }
+
+    private void PressKeyInstruction()
+    {
+        pressKeyInstructionText.gameObject.SetActive(true);
+        subscription = Observable.EveryUpdate()
+            .Where(_ => Input.GetKeyDown(KeyCode.Return))
+            .Take(1)
+            .Subscribe(_ =>
+            {
+                HiddenTalkScreen().Forget();
+                pressKeyInstructionText.gameObject.SetActive(false);
+                SwitchToDescriptionHidden().Forget();
+                subscription.Dispose();
+            }).AddTo(this);
+    }
+
+    /// <summary>
+    /// トーク画面を隠す0
+    /// </summary>
+    private async UniTask HiddenTalkScreen()
+    {
+        GameManager.instance.PauseGame(false);
+
+        talkScreenBackground.DOFade(0f, 0.2f);
+        await talkScreenPlayer.DOLocalMoveX(talkScreenPlayer.rect.position.x - 250,
+                                      0.5f).ToUniTask();
+
+        talkScreenBackground.gameObject.SetActive(false);
+        talkScreenPlayer.gameObject.SetActive(false);
     }
 
     //説明のUIを表示
@@ -193,33 +275,7 @@ public class UI : MonoBehaviour, ISaveManager
                 pressKeyInstructionText.gameObject.SetActive(false);
                 subscription.Dispose();
             }).AddTo(this);
-    }
-
-    //説明のUIを表示
-    //テキストを表示させるオブジェクトに当たったときに呼ばれる
-    private async UniTask SwitchToDescriptionDisplay(int index)
-    {
-        SwitchWithKeyTo(descriptionUI);
-        DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
-        string description = DescriptionDefinition.GetDescriptionText(index);
-        descriptionText.text = "";
-
-        await DisplayText(description);
-        PressKeyInstruction();
-    }
-
-    private void PressKeyInstruction()
-    {
-        pressKeyInstructionText.gameObject.SetActive(true);
-        subscription = Observable.EveryUpdate()
-            .Where(_ => Input.GetKeyDown(KeyCode.Return))
-            .Subscribe(_ =>
-            {
-                pressKeyInstructionText.gameObject.SetActive(false);
-                SwitchToDescriptionHidden().Forget();
-                subscription.Dispose();
-            }).AddTo(this);
-    }
+    }    
 
     //UIのDescriptionTextを表示しながら、音を出す
     private async UniTask DisplayText(string description)
@@ -244,7 +300,6 @@ public class UI : MonoBehaviour, ISaveManager
 
     private async UniTask SwitchToDescriptionHidden()
     {
-        onDescriptionDisplay = false;
         DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Hidden");
         await UniTask.DelayFrame(DESCRIPTION_HIDDEN_WAIT_TIME);
         SwitchWithKeyTo(descriptionUI);
@@ -252,9 +307,9 @@ public class UI : MonoBehaviour, ISaveManager
 
     public void SwitchTo(GameObject _menu)
     {
-        
+        AudioManager.instance.StopSFX(8);
 
-        for(int i = 0; i < transform.childCount; i++)
+        for (int i = 0; i < transform.childCount; i++)
         {
             //ゲームオブジェクトがアクティブ状態のときにfadeScreenの状態にするため
             bool fadeScreen = transform.GetChild(i).GetComponent<UI_FadeScreen>() != null;
@@ -265,6 +320,12 @@ public class UI : MonoBehaviour, ISaveManager
                 if(transform.GetChild(i).gameObject != descriptionUI)
                 {
                     transform.GetChild(i).gameObject.SetActive(false);
+                }
+
+                if(_menu == descriptionUI)
+                {
+                    talkScreenBackground.gameObject.SetActive(true);
+                    talkScreenPlayer.gameObject.SetActive(true);
                 }
             }
         }

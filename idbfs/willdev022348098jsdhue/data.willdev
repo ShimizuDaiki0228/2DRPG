@@ -1,58 +1,8 @@
 {
-    "currency": 100,
+    "currency": 0,
     "skillTree": {
-        "keys": [
-            "Dodge",
-            "Dash",
-            "Multiple distruction",
-            "Blackhole",
-            "Chain saw sword",
-            "Dash - \"Actually here I am\"",
-            "Bouncy sword",
-            "Bullet sword",
-            "Dodge mirage",
-            "Crystal ",
-            "Mirage blink",
-            "Explosion",
-            "Controlled destruction",
-            "Multiple mirage",
-            "Restore with parry",
-            "Dash - \"Hre I am\"",
-            "Crystal mirage",
-            "Agrresive mirage",
-            "Parry",
-            "Time stop",
-            "Time mirage",
-            "Vulnerability",
-            "Parry with a mirage",
-            "Sword Throw"
-        ],
-        "values": [
-            false,
-            true,
-            false,
-            true,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            false,
-            true,
-            false,
-            false,
-            false,
-            false,
-            true,
-            false,
-            false,
-            false
-        ]
+        "keys": [],
+        "values": []
     },
     "inventory": {
         "keys": [
@@ -60,8 +10,8 @@
             "afc7d68d43673b444914237c15393db5"
         ],
         "values": [
-            98,
-            98
+            1,
+            1
         ]
     },
     "equipmentId": [],
@@ -72,12 +22,12 @@
             "0874b36d-1359-4d49-8584-3892440e1136"
         ],
         "values": [
-            true,
-            true,
-            true
+            false,
+            false,
+            false
         ]
     },
-    "closestCheckpointId": "0874b36d-1359-4d49-8584-3892440e1136",
+    "closestCheckpointId": "",
     "descriptionPoints": {
         "keys": [
             "0c1c4945-681c-4e1b-9483-bebb0dfe6060",
@@ -91,11 +41,11 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 96.65989685058594,
-    "lostCurrencyY": -1.7536779642105103,
+    "lostCurrencyX": -2.2900519371032717,
+    "lostCurrencyY": 0.2462158054113388,
     "lostCurrencyAmount": 0,
-    "isFirstTutorial": true,
-    "isMenuUsing": true,
+    "isFirstTutorial": false,
+    "isMenuUsing": false,
     "volumeSettings": {
         "keys": [
             "sfx",

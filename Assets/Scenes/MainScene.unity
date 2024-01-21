@@ -3190,7 +3190,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &117458585
 Transform:
   m_ObjectHideFlags: 0
@@ -4480,7 +4480,7 @@ RectTransform:
   - {fileID: 1940753958}
   - {fileID: 502859146}
   m_Father: {fileID: 1501442927}
-  m_RootOrder: 8
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -13797,13 +13797,14 @@ GameObject:
   - component: {fileID: 677271836}
   - component: {fileID: 677271838}
   - component: {fileID: 677271837}
+  - component: {fileID: 677271839}
   m_Layer: 5
-  m_Name: Image
+  m_Name: TalkScreenBackground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &677271836
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13817,7 +13818,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1501442927}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -13862,6 +13863,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 677271835}
   m_CullTransparentMesh: 1
+--- !u!225 &677271839
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 677271835}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &677935700
 GameObject:
   m_ObjectHideFlags: 0
@@ -45867,9 +45880,9 @@ RectTransform:
   - {fileID: 108378627}
   - {fileID: 942107909}
   - {fileID: 2053953693}
-  - {fileID: 188879271}
   - {fileID: 677271836}
   - {fileID: 1737111230}
+  - {fileID: 188879271}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -45890,6 +45903,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62164580bd9cd6c4db4f863f32753a99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  talkScreenBackgroundGameObject: {fileID: 677271835}
+  talkScreenBackground: {fileID: 677271839}
+  talkScreenPlayerGameObject: {fileID: 1737111229}
+  talkScreenPlayer: {fileID: 1737111230}
   fadeScreen: {fileID: 1802796117}
   endText: {fileID: 942107908}
   restartButton: {fileID: 2053953692}
@@ -55787,12 +55804,12 @@ GameObject:
   - component: {fileID: 1737111232}
   - component: {fileID: 1737111231}
   m_Layer: 5
-  m_Name: Image
+  m_Name: TalkScreenPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1737111230
 RectTransform:
   m_ObjectHideFlags: 0
@@ -55806,11 +55823,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1501442927}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -565, y: -332}
+  m_AnchoredPosition: {x: -1050, y: -332}
   m_SizeDelta: {x: 1500, y: 1000}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1737111231
@@ -74658,7 +74675,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2088664800
 Transform:
   m_ObjectHideFlags: 0
