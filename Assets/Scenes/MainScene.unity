@@ -7810,7 +7810,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &375000719
 RectTransform:
   m_ObjectHideFlags: 0
@@ -42258,6 +42258,7 @@ MonoBehaviour:
   craftUI: {fileID: 2133399372}
   optionsUI: {fileID: 729563886}
   inGameUI: {fileID: 1029799249}
+  operationUI: {fileID: 375000718}
   descriptionUI: {fileID: 188879270}
   skillToolTip: {fileID: 1469275774}
   itemToolTip: {fileID: 969603307}

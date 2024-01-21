@@ -12,8 +12,8 @@
             "d142e031d4e72714782eca794dcb3b3a"
         ],
         "values": [
-            25,
-            25,
+            28,
+            28,
             1,
             1
         ]
@@ -27,11 +27,11 @@
         ],
         "values": [
             true,
-            false,
+            true,
             false
         ]
     },
-    "closestCheckpointId": "8d28a093-ec91-4594-8490-2569d2a12ff4",
+    "closestCheckpointId": "7779dcd7-559e-4192-8175-b793c75c3cd3",
     "descriptionPoints": {
         "keys": [
             "34706273-21b1-4db5-8995-37cc8f09edbf"
@@ -41,8 +41,8 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 17.32463264465332,
-    "lostCurrencyY": -1.7537003755569459,
+    "lostCurrencyX": 101.30000305175781,
+    "lostCurrencyY": -1.7541924715042115,
     "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,

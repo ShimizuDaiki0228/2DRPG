@@ -29,6 +29,7 @@ public class UI : MonoBehaviour, ISaveManager
     [SerializeField] private GameObject craftUI;
     [SerializeField] private GameObject optionsUI;
     [SerializeField] private GameObject inGameUI;
+    [SerializeField] private GameObject operationUI;
     [SerializeField] private GameObject descriptionUI;
 
     public UI_SkillToolTip skillToolTip;
@@ -127,11 +128,9 @@ public class UI : MonoBehaviour, ISaveManager
                 SwitchWithKeyTo(optionsUI);
         }
 
-        if (Input.GetKeyDown(KeyCode.G))
-            await DisplayTalkScreen();
+        if (Input.GetKeyDown(KeyCode.M))
+            SwitchWithKeyTo(operationUI);
 
-        if(Input.GetKeyDown(KeyCode.F))
-            await HiddenTalkScreen();
     }
 
     /// <summary>
