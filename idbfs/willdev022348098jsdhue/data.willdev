@@ -7,9 +7,13 @@
     "inventory": {
         "keys": [
             "417adddd880462d4f936cbaa70204191",
-            "afc7d68d43673b444914237c15393db5"
+            "afc7d68d43673b444914237c15393db5",
+            "0a808737b92dff946935cfc2b5f5cbd5",
+            "d142e031d4e72714782eca794dcb3b3a"
         ],
         "values": [
+            25,
+            25,
             1,
             1
         ]
@@ -22,30 +26,26 @@
             "0874b36d-1359-4d49-8584-3892440e1136"
         ],
         "values": [
-            false,
+            true,
             false,
             false
         ]
     },
-    "closestCheckpointId": "",
+    "closestCheckpointId": "8d28a093-ec91-4594-8490-2569d2a12ff4",
     "descriptionPoints": {
         "keys": [
-            "0c1c4945-681c-4e1b-9483-bebb0dfe6060",
-            "34706273-21b1-4db5-8995-37cc8f09edbf",
-            "e8ff0a49-1a87-4255-9688-ff3b92425cba"
+            "34706273-21b1-4db5-8995-37cc8f09edbf"
         ],
         "values": [
-            true,
-            true,
             true
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": -2.2900519371032717,
-    "lostCurrencyY": 0.2462158054113388,
+    "lostCurrencyX": 17.32463264465332,
+    "lostCurrencyY": -1.7537003755569459,
     "lostCurrencyAmount": 0,
-    "isFirstTutorial": false,
-    "isMenuUsing": false,
+    "isFirstTutorial": true,
+    "isMenuUsing": true,
     "volumeSettings": {
         "keys": [
             "sfx",
