@@ -35,6 +35,5 @@ public class Checkpoint : MonoBehaviour
 
         activationStatus = true;
         anim.SetBool("active", true);
-        Debug.Log("CheckPointActive");
     }
 }

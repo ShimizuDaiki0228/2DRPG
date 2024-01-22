@@ -91,8 +91,7 @@ public class UI : MonoBehaviour, ISaveManager
         DescriptionManager.instance.OnDescriptionDisplayObjectAsObservable
             .Subscribe(index =>
             {
-                //SwitchToDescriptionDisplay(index).Forget();
-                DisplayTalkScreen().Forget();
+                DisplayTalkScreen(index).Forget();
             }).AddTo(this);
 
         if(!GameManager.instance.IsFirstTutorial)
@@ -140,7 +139,7 @@ public class UI : MonoBehaviour, ISaveManager
     /// <summary>
     /// トーク画面を表示する
     /// </summary>
-    private async UniTask DisplayTalkScreen()
+    private async UniTask DisplayTalkScreen(int index)
     {
         isMenuUsing = false;
         AudioManager.instance.StopSFX(8);
@@ -171,7 +170,7 @@ public class UI : MonoBehaviour, ISaveManager
 
         SwitchWithKeyTo(descriptionUI);
         DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
-        string description = DescriptionDefinition.GetDescriptionText(0);
+        string description = DescriptionDefinition.GetDescriptionText(index);
         descriptionText.text = "";
 
         await DisplayText(description);
@@ -366,7 +365,8 @@ public class UI : MonoBehaviour, ISaveManager
     {
         for(int i = 0; i < transform.childCount; i++)
         {
-            if (transform.GetChild(i).gameObject.activeSelf && transform.GetChild(i).GetComponent<UI_FadeScreen>() == null)
+            if (transform.GetChild(i).gameObject.activeSelf && 
+                (transform.GetChild(i).GetComponent<UI_FadeScreen>() == null && transform.GetChild(i).GetComponent<TransitionScreen>() == null))
                 return;
         }
 

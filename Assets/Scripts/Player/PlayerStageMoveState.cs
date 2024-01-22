@@ -25,7 +25,7 @@ public class PlayerStageMoveState : PlayerState
     /// <summary>
     /// プレイヤーが消えるまでにかかる時間
     /// </summary>
-    private const float FADE_DURATION = 2.0f;
+    private const float FADE_DURATION = 1.0f;
 
     /// <summary>
     /// 画面がフェードアウトするのを待つ時間
@@ -91,22 +91,7 @@ public class PlayerStageMoveState : PlayerState
         rb.gravityScale = 0;
         renderer = player.playerRenderer;
 
-        Sequence beforeMoveSequence = DOTween.Sequence();
-        Sequence afterMoveSequence = DOTween.Sequence();
-
-        beforeMoveSequence
-            .Append(player.transform.DOLocalMoveY(
-                        player.transform.localPosition.y + 2.5f,
-                        flyTime
-                )
-                .SetEase(Ease.OutCirc)
-            )
-            .Append(player.transform.DOLocalMoveY(
-                        player.transform.localPosition.y + 2.3f,
-                        DELAY_FADE_DURATION
-                    )
-            );
-            
+        Sequence beforeMoveSequence = FloatingAnimationSequence();
 
         await beforeMoveSequence.AsyncWaitForCompletion();
 
@@ -128,11 +113,47 @@ public class PlayerStageMoveState : PlayerState
 
         await UniTask.WaitForSeconds(1);
 
+        await ArrivalAnimationSequence(exitGate);
+
+        
+        stateMachine.ChangeState(player.airState);
+    }
+
+    /// <summary>
+    /// プレイヤーがゲートに触れて浮くアニメーションシーケンス
+    /// </summary>
+    /// <returns></returns>
+    private Sequence FloatingAnimationSequence()
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence
+            .Append(player.transform.DOLocalMoveY(
+                        player.transform.localPosition.y + 2.5f,
+                        flyTime
+                )
+                .SetEase(Ease.OutCirc)
+            )
+            .Append(player.transform.DOLocalMoveY(
+                        player.transform.localPosition.y + 2.3f,
+                        DELAY_FADE_DURATION
+                    )
+            );
+
+        return sequence;
+    }
+
+    /// <summary>
+    /// ゲートに触れて到着した後のアニメーションシーケンス
+    /// </summary>
+    /// <returns></returns>
+    private async UniTask ArrivalAnimationSequence(GameObject exitGate)
+    {
         await ChildDOScale(exitGate, 1, 2);
 
         await renderer.DOFade(1f, FADE_DURATION).ToUniTask();
-        
-        stateMachine.ChangeState(player.airState);
+
+        await ChildDOScale(exitGate, 0, 2);
     }
 
     public override void Exit()
