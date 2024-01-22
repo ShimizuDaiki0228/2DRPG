@@ -89,6 +89,11 @@ public class Player : Entity
 
     public int gateNumber;
 
+    /// <summary>
+    /// キーボード操作の可否、エリア移動中はできないようにする
+    /// </summary>
+    private bool keyboardEnabled = true;
+
     protected override void Awake()
     {
         base.Awake();
@@ -156,6 +161,9 @@ public class Player : Entity
     protected override void Update()
     {
         if (Time.timeScale == 0)
+            return;
+
+        if (!keyboardEnabled)
             return;
 
         base.Update();
@@ -267,11 +275,36 @@ public class Player : Entity
         
         else if(collision.tag == "RightArea")
         {
-            await ui.GradationFadeOut(LeftToRightGradationImage);
-            await UniTask.WaitForSeconds(2);
-            transform.position = areaMove.CollisionRightArea(collision.gameObject).Value;
-
-            ui.GradationFadeIn(RightToLeftGradationImage).Forget();
+            AreaMove(LeftToRightGradationImage,
+                     areaMove.CollisionRightArea(collision.gameObject).Value,
+                     RightToLeftGradationImage);
         }
+        
+        else if(collision.tag == "LeftArea")
+        {
+            AreaMove(RightToLeftGradationImage,
+                     areaMove.OnCollisionLeftArea(collision.gameObject).Value,
+                     LeftToRightGradationImage);
+        }
+    }
+
+    /// <summary>
+    /// エリア移動する場所に触れた場合の処理
+    /// </summary>
+    private async void AreaMove(Sprite fadeOutImage,
+                                Vector3 afterMovePosition,
+                                Sprite fadeInImage)
+    {
+        keyboardEnabled = false;
+        rb.velocity = Vector2.zero;
+        stateMachine.ChangeState(idleState);
+
+        await ui.GradationFadeOut(fadeOutImage);
+        await UniTask.WaitForSeconds(2);
+        transform.position = afterMovePosition;
+
+        ui.GradationFadeIn(fadeInImage).Forget();
+
+        keyboardEnabled = true;
     }
 }

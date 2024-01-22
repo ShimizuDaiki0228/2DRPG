@@ -10,8 +10,8 @@
             "afc7d68d43673b444914237c15393db5"
         ],
         "values": [
-            86,
-            86
+            97,
+            97
         ]
     },
     "equipmentId": [],
@@ -37,8 +37,8 @@
         ]
     },
     "descriptionPointId": "",
-    "lostCurrencyX": 105.45977020263672,
-    "lostCurrencyY": -1.7536894083023072,
+    "lostCurrencyX": 223.8401641845703,
+    "lostCurrencyY": -2.7536768913269045,
     "lostCurrencyAmount": 0,
     "isFirstTutorial": true,
     "isMenuUsing": true,

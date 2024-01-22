@@ -39,7 +39,7 @@ public class AreaMove : MonoBehaviour
         {
             if (pair.LeftArea == collision)
             {
-                return pair.LeftArea.transform.position - MOVE_AREA_OFFSET;
+                return pair.RightArea.transform.position - MOVE_AREA_OFFSET;
             }
         }
 

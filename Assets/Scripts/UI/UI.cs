@@ -323,17 +323,19 @@ public class UI : MonoBehaviour, ISaveManager
                 if(transform.GetChild(i).gameObject != descriptionUI)
                 {
                     transform.GetChild(i).gameObject.SetActive(false);
-                }
-
-                if(_menu == descriptionUI)
-                {
-                    talkScreenBackground.gameObject.SetActive(true);
-                    talkScreenPlayer.gameObject.SetActive(true);
-                }
+                } 
             }
         }
 
-        if(_menu != null)
+        if (_menu == descriptionUI)
+        {
+            talkScreenBackground.gameObject.SetActive(true);
+            talkScreenPlayer.gameObject.SetActive(true);
+        }
+
+        transitionScreen.gameObject.SetActive(true);
+
+        if (_menu != null)
         {
             AudioManager.instance.PlaySFX(5, null);
             _menu.SetActive(true);
