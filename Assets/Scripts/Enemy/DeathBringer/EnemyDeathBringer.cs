@@ -50,11 +50,6 @@ public class EnemyDeathBringer : Enemy
         stateMachine.Initialize(idleState);
     }
 
-    //protected override void Update()
-    //{
-    //    base.Update();
-    //}
-
     public override void Die()
     {
         base.Die();
@@ -75,6 +70,8 @@ public class EnemyDeathBringer : Enemy
 
         GameObject newSpell = Instantiate(spellPrefab, spellPosition, Quaternion.identity);
         newSpell.GetComponent<DeathBringerSpellController>().SetupSpell(stats);
+
+        AudioManager.instance.PlaySFX(38, null);
     }
 
     public void FindPosition()
@@ -88,7 +85,6 @@ public class EnemyDeathBringer : Enemy
 
         if(!GroundBelow() || SomethingIsAround())
         {
-            Debug.Log("Looking for new position");
             FindPosition();
         }
     }

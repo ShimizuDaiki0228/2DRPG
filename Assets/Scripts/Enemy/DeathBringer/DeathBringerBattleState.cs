@@ -19,9 +19,6 @@ public class DeathBringerBattleState : EnemyState
         base.Enter();
 
         player = PlayerManager.instance.player.transform;
-
-        //if (player.GetComponent<PlayerStats>().isDead)
-        //    stateMachine.ChangedState(enemy.moveState);
     }
 
     public override void Exit()

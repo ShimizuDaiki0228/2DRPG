@@ -32,9 +32,6 @@ public class DeathBringerIdleState : EnemyState
         if(Vector2.Distance(player.transform.position, enemy.transform.position) < 10)
             enemy.bossFightBegun = true;
 
-        //if (Input.GetKeyDown(KeyCode.Y))
-        //    stateMachine.ChangedState(enemy.teleportState);
-
         if (stateTimer < 0 && enemy.bossFightBegun)
             stateMachine.ChangedState(enemy.battleState);
 

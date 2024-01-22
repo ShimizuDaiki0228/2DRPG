@@ -20,7 +20,8 @@ public class DeathBringerSpellController : MonoBehaviour
 
         foreach (var hit in colliders)
         {
-            if (hit.GetComponent<CharacterStats>() != null)
+            if (hit.GetComponent<CharacterStats>() != null
+                && hit.GetComponent<EnemyStats>() == null)
             {
                 hit.GetComponent<Entity>().SetupKnockbackDir(transform);
                 myStats.DoDamage(hit.GetComponent<CharacterStats>());
