@@ -59,6 +59,8 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerEnterHand
         if (item == null)
             return;
 
+        AudioManager.instance.PlaySFX(45, null);
+
         if(Input.GetKey(KeyCode.LeftControl))
         {
             Inventory.instance.RemoveItem(item.data);

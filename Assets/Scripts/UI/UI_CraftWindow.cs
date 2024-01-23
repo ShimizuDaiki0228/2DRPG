@@ -69,13 +69,18 @@ public class UI_CraftWindow : MonoBehaviour, ISaveManager
             .Subscribe(_ =>
             {
                 bool canCraft = Inventory.instance.CanCraft(_data, _data.craftingMaterials);
-                if (canCraft && !isTutorial) 
+
+                if (canCraft)
                 {
-                    isCraftUITutorialSubject.OnNext(Unit.Default);
+                    AudioManager.instance.PlaySFX(44, null);
+                    if (!isTutorial)
+                        isCraftUITutorialSubject.OnNext(Unit.Default);
                 }
+                else
+                    AudioManager.instance.PlaySFX(43, null);
             }
             ).AddTo(this);
 
-        craftButton.onClick.AddListener(() => Inventory.instance.CanCraft(_data, _data.craftingMaterials));
+        //craftButton.onClick.AddListener(() => Inventory.instance.CanCraft(_data, _data.craftingMaterials));
     }
 }

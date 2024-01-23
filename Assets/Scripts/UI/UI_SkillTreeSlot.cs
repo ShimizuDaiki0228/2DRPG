@@ -58,6 +58,7 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (shouldBeUnlocked[i].unlocked == false)
             {
+                AudioManager.instance.PlaySFX(43, null);
                 return;
             }
         }
@@ -66,10 +67,12 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (shouldBeLocked[i].unlocked == true)
             {
+                AudioManager.instance.PlaySFX(43, null);
                 return;
             }
         }
 
+        AudioManager.instance.PlaySFX(41, null);
         unlocked = true;
         skillImage.color = Color.white;
 

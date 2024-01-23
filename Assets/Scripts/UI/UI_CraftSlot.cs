@@ -28,5 +28,6 @@ public class UI_CraftSlot : UI_ItemSlot
     {
         ui.craftWindow.SetupCraftWindow(item.data as ItemData_Equipment);
 
+        AudioManager.instance.PlaySFX(42, null);
     }
 }
