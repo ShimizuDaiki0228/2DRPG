@@ -98,13 +98,32 @@ public class UI : MonoBehaviour, ISaveManager
     /// </summary>
     private bool isDescriptionUIDisplay = false;
 
+    /// <summary>
+    /// 壊せる壁、実際には上に移動する
+    /// チュートリアル後に動かす
+    /// </summary>
+    [SerializeField]
+    private GameObject canBrokenWall;
+
+    /// <summary>
+    /// canBrokenWallが移動するときに生成するエフェクト
+    /// </summary>
+    [SerializeField]
+    private GameObject dustFXPrefab;
+
+    /// <summary>
+    /// canBrokenWallが最後まで上にいった時に生成するエフェクト
+    /// </summary>
+    [SerializeField]
+    private GameObject dustFinishFXPrefab;
+
     private void Awake()
     {
         fadeScreen.gameObject.SetActive(true);
     }
 
 
-    void Start()
+    async void Start()
     {
         pressKeyInstructionText.gameObject.SetActive(false);
 
@@ -155,6 +174,26 @@ public class UI : MonoBehaviour, ISaveManager
             .Subscribe(_ =>
                 isMenuUsing = true
             ).AddTo(this);
+
+        GameObject dustFX = Instantiate(dustFXPrefab,
+                                            dustFXPrefab.transform.position,
+                                            Quaternion.identity);
+        await canBrokenWall.transform.DOMoveY(7, 3)
+            .SetEase(Ease.OutCubic)
+            .ToUniTask();
+
+        Destroy(canBrokenWall);
+        Destroy(dustFX);
+
+        GameObject dustFinishFX = Instantiate(dustFinishFXPrefab,
+                                              dustFinishFXPrefab.transform.position,
+                                              Quaternion.identity);
+
+        ParticleSystem dustFinishFXParticleSystem
+            = dustFinishFX.GetComponent<ParticleSystem>();
+
+        if(dustFinishFXParticleSystem != null)
+            Destroy(dustFinishFX, dustFinishFXParticleSystem.main.duration);
     }
 
     // Update is called once per frame
@@ -249,7 +288,7 @@ public class UI : MonoBehaviour, ISaveManager
     /// <summary>
     /// トーク画面を隠す0
     /// </summary>
-    private async UniTask HiddenTalkScreen()
+    private async UniTask HiddenTalkScreen(bool isTutorial = false)
     {
         GameManager.instance.PauseGame(false);
 
@@ -259,6 +298,29 @@ public class UI : MonoBehaviour, ISaveManager
 
         talkScreenBackground.gameObject.SetActive(false);
         talkScreenPlayer.gameObject.SetActive(false);
+
+        if(isTutorial)
+        {
+            GameObject dustFX = Instantiate(dustFXPrefab,
+                                            dustFXPrefab.transform.position,
+                                            Quaternion.identity);
+            await  canBrokenWall.transform.DOMoveY(7, 3)
+                .SetEase(Ease.OutCubic)
+                .ToUniTask();
+
+            Destroy(canBrokenWall);
+            Destroy(dustFX);
+
+            GameObject dustFinishFX = Instantiate(dustFinishFXPrefab,
+                                                  dustFinishFXPrefab.transform.position,
+                                                  Quaternion.identity);
+
+            ParticleSystem dustFinishFXParticleSystem
+            = dustFinishFX.GetComponent<ParticleSystem>();
+
+            if (dustFinishFXParticleSystem != null)
+                Destroy(dustFinishFX, dustFinishFXParticleSystem.main.duration);
+        }
     }
 
     //説明のUIを表示
@@ -327,7 +389,11 @@ public class UI : MonoBehaviour, ISaveManager
                     if(index == 4)
                         IsTutorialPlayingProp.Value = false;
 
-                    HiddenTalkScreen().Forget();
+                    if (index == 5)
+                        HiddenTalkScreen(true).Forget();
+                    else
+                        HiddenTalkScreen().Forget();
+
                     SwitchToDescriptionHidden().Forget();
                 }
                 pressKeyInstructionText.gameObject.SetActive(false);
