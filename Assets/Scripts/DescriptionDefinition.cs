@@ -20,23 +20,61 @@ namespace RPG.Definition
             return descriptionText[index];
         }
 
-        public static List<List<string>> specialDescriptionText = new List<List<string>>()
+        public static List<Dictionary<int, string>> specialDescriptionText = new List<Dictionary<int, string>>()
         {
-            new List<string>()
+            new Dictionary< int, string >()
             {
-                "アイテムがドロップしたみたいだ、拾ってみよう。",
+                {0 , "アイテムがドロップしたみたいだ、拾ってみよう。"},
             },
-            new List<string>()
+            new Dictionary<int, string>()
             {
-                "このアイテムを使ってアイテムを作ってみよう",
-                "Pキーをクリックして作成メニューを開いてみよう",
-                "ここではアイテムを作成することができる。\n試しに先ほど手に入れたアイテムを使って武器を作ってみよう。"
+                { 0 , "このアイテムを使ってアイテムを作ってみよう" },
+                { 1 , "Pキーをクリックして作成メニューを開いてみよう"},
+                { 2 , "ここではアイテムを作成することができる。\n試しに先ほど手に入れたアイテムを使って武器を作ってみよう。"}
             }
         };
 
-        public static List<string> GetSpecialDescriptionText(int index)
+        public static List<Dictionary<int, string>> specialDescriptionKeyInstruction = new List<Dictionary<int, string>>()
+        {
+            new Dictionary< int, string >()
+            {
+                {0 , "Enter"},
+            },
+            new Dictionary<int, string>()
+            {
+                { 0 , "Enter" },
+                { 1 , "P"},
+                { 2 , "Enter"}
+            }
+        };
+
+        public static List<Dictionary<int, KeyCode>> specialDescriptionKeyCode = new List<Dictionary<int, KeyCode>>()
+        {
+            new Dictionary< int, KeyCode >()
+            {
+                {0 , KeyCode.P},
+            },
+            new Dictionary<int, KeyCode>()
+            {
+                { 0 , KeyCode.Return},
+                { 1 , KeyCode.P},
+                { 2 , KeyCode.Return}
+            }
+        };
+
+        public static Dictionary<int, string> GetSpecialDescriptionText(int index)
         {
             return specialDescriptionText[index];
+        }
+
+        public static Dictionary<int, string> GetSpecialDescriptionKeyInstruction(int index)
+        {
+            return specialDescriptionKeyInstruction[index];
+        }
+
+        public static Dictionary<int, KeyCode> GetSpecialDescriptionKeyCode(int index)
+        {
+            return specialDescriptionKeyCode[index];
         }
     }
 

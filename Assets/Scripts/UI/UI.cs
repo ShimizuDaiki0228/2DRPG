@@ -9,6 +9,7 @@ using UnityEngine;
 using DG.Tweening;
 using System.Reflection;
 using UnityEngine.UI;
+using System.Linq;
 
 public class UI : MonoBehaviour, ISaveManager
 {
@@ -66,7 +67,9 @@ public class UI : MonoBehaviour, ISaveManager
     //SpecialDescriptionManagerスクリプトで使えるかどうかを購読する
     private bool isMenuUsing;
 
-    List<string> specialDescriptionList = new List<string>();
+    Dictionary<int, string> specialDescriptionDict = new Dictionary<int, string>();
+    Dictionary<int, string> specialDescriptionKeyInstructionDict = new Dictionary<int, string>();
+    Dictionary<int, KeyCode> specialDescriptionKeyCodeDict = new Dictionary<int, KeyCode>();
 
     KeyCode descriptionKeyCode = default;
 
@@ -217,55 +220,48 @@ public class UI : MonoBehaviour, ISaveManager
         SwitchWithKeyTo(descriptionUI);
         DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
 
-        specialDescriptionList = DescriptionDefinition.GetSpecialDescriptionText(index);
-        
-        SpecialPressKeyInstruction(index , 0, specialDescriptionList).Forget();
+        specialDescriptionDict = DescriptionDefinition.GetSpecialDescriptionText(index);
+        specialDescriptionKeyInstructionDict = DescriptionDefinition.GetSpecialDescriptionKeyInstruction(index);
+        specialDescriptionKeyCodeDict = DescriptionDefinition.GetSpecialDescriptionKeyCode(index);
+
+        SpecialPressKeyInstruction(index,
+                                   0,
+                                   specialDescriptionDict,
+                                   specialDescriptionKeyInstructionDict,
+                                   specialDescriptionKeyCodeDict).Forget();
     }
 
-    private async UniTask SpecialPressKeyInstruction(int index ,int textNum , List<string> specialDescriptionList)
+    private async UniTask SpecialPressKeyInstruction(int index,
+                                                     int textNum,
+                                                     Dictionary<int, string> textDict,
+                                                     Dictionary<int, string> keyInstructionDict,
+                                                     Dictionary<int, KeyCode> keyCodeDict)
     {
         int _textNum = textNum;
-        string description = specialDescriptionList[_textNum];
+        string text = textDict[textNum];
+        string keyInstruction = keyInstructionDict[textNum];
+        KeyCode keyCode = keyCodeDict[textNum];
+
         descriptionText.text = "";
-        await DisplayText(description);
+        await DisplayText(text);
         KeyType keyType = SpecialDescriptionManager.instance.GetKeyType(index, textNum);
 
-        
-        if (keyType == KeyType.P)
-        {
-            descriptionKeyCode = KeyCode.P;
-            pressKeyInstructionText.text = "Pキーをクリックしてください";
-        }
-        else if (keyType == KeyType.O)
-        {
-            descriptionKeyCode = KeyCode.O;
-            pressKeyInstructionText.text = "Oキーをクリックしてください";
-        }
-        else if (keyType == KeyType.K)
-        {
-            descriptionKeyCode = KeyCode.K;
-            pressKeyInstructionText.text = "Kキーをクリックしてください";
-        }
-        else if (keyType == KeyType.L)
-        {
-            descriptionKeyCode = KeyCode.L;
-            pressKeyInstructionText.text = "Lキーをクリックしてください";
-        }
-        else if (keyType == KeyType.Return)
-        {
-            descriptionKeyCode = KeyCode.Return;
-            pressKeyInstructionText.text = "Enterキーをクリックしてください";
-        }
+        descriptionKeyCode = keyCode;
+        pressKeyInstructionText.text = $"{keyInstruction}キーをクリックしてください";
 
         pressKeyInstructionText.gameObject.SetActive(true);
         subscription = Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(descriptionKeyCode))
             .Subscribe(_ =>
             {
-                if (_textNum < specialDescriptionList.Count - 1)
+                if (_textNum < textDict.Count - 1)
                 {
                     _textNum++;
-                    SpecialPressKeyInstruction(index, _textNum, specialDescriptionList).Forget();
+                    SpecialPressKeyInstruction(index, 
+                                               _textNum,
+                                               textDict,
+                                               keyInstructionDict,
+                                               keyCodeDict).Forget();
                 }
                 else
                 {
