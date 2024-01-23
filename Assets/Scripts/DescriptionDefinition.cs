@@ -30,7 +30,30 @@ namespace RPG.Definition
             {
                 { 0 , "このアイテムを使ってアイテムを作ってみよう" },
                 { 1 , "Pキーをクリックして作成メニューを開いてみよう"},
-                { 2 , "ここではアイテムを作成することができる。\n試しに先ほど手に入れたアイテムを使って武器を作ってみよう。"}
+                { 2 , "ここではアイテムを作成することができる。\n\n試しに先ほど手に入れたアイテムを使って武器を作ってみよう。"}
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "いいね！　新しい装備を作れたら次はOキーをクリックして装備してみよう!" },
+                {1, "ここで先ほど作成した装備を装着することができるよ！\n\n画面右下にある装備をクリックしてみよう" }
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "装備できたようだね！\n\n装備の種類は4種類あるからいろんな装備を身に付けて強化しよう！" },
+                {1,  "装備を身に付けることによって上がるパラメータは左で確認できるよ！\n\nマウスを近づけることで詳細説明が表示されるよ！"},
+                {2, "次にスキルを確認しよう！\nスキルは敵を倒した時に得られるお金を使って開放することができるよ！\n\nKキーをクリックしてスキルを見てみよう" },
+                {3, "開けたみたいだね！\n\nじゃあ、試しに一つスキルを開放してみよう！" }
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "スキルが開放できたみたいだね!\n\n今回開放したスキルはマウスを右クリック長押しして離すと剣を投げて攻撃することができるよ！" },
+                {1, "ちなみに一部のスキルは派生前のスキルを開放していないと開放することができないから注意しよう！" },
+                {2, "最後に効果音の設定をしよう！\n\nLキーをクリックして設定画面を開いてみよう！" },
+                {3, "開けたみたいだね！\nバーを調整することで音の大きさを調整することができるからもし変更したかったら変更してね！" }
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "これでチュートリアルは終わりだよ！\n\nさぁ！魔王を倒しに行こう！" }
             }
         };
 
@@ -45,6 +68,29 @@ namespace RPG.Definition
                 { 0 , "Enter" },
                 { 1 , "P"},
                 { 2 , "Enter"}
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "O" },
+                {1, "Enter" },
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "Enter" },
+                {1, "Enter" },
+                {2, "K" },
+                {3, "Enter" }
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "Enter" },
+                {1, "Enter" },
+                {2, "L" },
+                {3, "Enter" }
+            },
+            new Dictionary<int, string>()
+            {
+                {0, "Enter" }
             }
         };
 
@@ -59,6 +105,29 @@ namespace RPG.Definition
                 { 0 , KeyCode.Return},
                 { 1 , KeyCode.P},
                 { 2 , KeyCode.Return}
+            },
+            new Dictionary<int, KeyCode>()
+            {
+                {0, KeyCode.O },
+                {1, KeyCode.Return },
+            },
+            new Dictionary<int, KeyCode>()
+            {
+                {0, KeyCode.Return },
+                {1, KeyCode.Return },
+                {2, KeyCode.K },
+                {3, KeyCode.Return }
+            },
+            new Dictionary<int, KeyCode>()
+            {
+                {0, KeyCode.Return },
+                {1, KeyCode.Return },
+                {2, KeyCode.L },
+                {3, KeyCode.Return }
+            },
+            new Dictionary<int, KeyCode>()
+            {
+                {0, KeyCode.Return }
             }
         };
 

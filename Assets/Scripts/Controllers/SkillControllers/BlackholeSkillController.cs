@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class BlackholeSkillController : MonoBehaviour
 {
@@ -25,6 +26,8 @@ public class BlackholeSkillController : MonoBehaviour
     private List<Transform> targets = new List<Transform>();
     private List<GameObject> createdHotKey = new List<GameObject>();
 
+    [SerializeField] private GameObject volumePrefab;
+
     public bool playerCanExitState { get; private set; }
 
     public void SetupBlackhole(float _maxSize, float _growSpeed, float _shrinkSpeed, int _amountOfAttack, float _cloneAttackCooldown, float _blackholeDuration)
@@ -37,6 +40,9 @@ public class BlackholeSkillController : MonoBehaviour
 
         blackholeTimer = _blackholeDuration;
 
+        GameObject volume = Instantiate(volumePrefab, Vector3.zero, Quaternion.identity);
+
+        Destroy(volume.gameObject, 0.1f);
 
         if (SkillManager.instance.clone.crystalInsteadOfClone)
             playerCanDisapear = false;

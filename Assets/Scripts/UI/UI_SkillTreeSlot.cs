@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -20,7 +22,11 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
     [SerializeField] private UI_SkillTreeSlot[] shouldBeUnlocked;
     [SerializeField] private UI_SkillTreeSlot[] shouldBeLocked;
 
+    private bool isTutorial;
 
+    private Subject<Unit> isSkillUITutorialSubject = new Subject<Unit>();
+    public IObservable<Unit> IsSkillUITutorialAsObservable
+        => isSkillUITutorialSubject.AsObservable();
 
     private void OnValidate()
     {
@@ -52,7 +58,6 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (shouldBeUnlocked[i].unlocked == false)
             {
-                Debug.Log("Cannot unlock skill");
                 return;
             }
         }
@@ -61,13 +66,18 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (shouldBeLocked[i].unlocked == true)
             {
-                Debug.Log("Cannot unlock skill");
                 return;
             }
         }
 
         unlocked = true;
         skillImage.color = Color.white;
+
+        if(!isTutorial)
+        {
+            isTutorial = true;
+            isSkillUITutorialSubject.OnNext(Unit.Default);
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -82,6 +92,8 @@ public class UI_SkillTreeSlot : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void LoadData(GameData _data)
     {
+        isTutorial = _data.isFirstTutorial;
+
         if(_data.skillTree.TryGetValue(skillName, out bool value))
         {
             unlocked = value;

@@ -124,24 +124,6 @@ public class Player : Entity
         deadState = new PlayerDeadState(this, stateMachine, "Die");
 
         stageMoveState = new PlayerStageMoveState(this, stateMachine, "Jump", _exitGate);
-
-        Bind();
-    }
-
-    /// <summary>
-    /// バインド
-    /// </summary>
-    private void Bind()
-    {
-        stageMoveState.OnFadeObservable
-            .Subscribe(fade =>
-            {
-                if(fade == "fadeOut")
-                    ui.GradationFadeOut(centerToOutGradationImage);
-                else
-                    ui.GradationFadeIn(centerToOutGradationImage);
-            })
-            .AddTo(this);
     }
 
     protected override void Start()
@@ -156,6 +138,40 @@ public class Player : Entity
         defaultJumpForce = jumpForce;
         defaultDashSpeed = dashSpeed;
 
+        Bind();
+        SetEvent();
+    }
+
+    /// <summary>
+    /// バインド
+    /// </summary>
+    private void Bind()
+    {
+        stageMoveState.OnFadeObservable
+            .Subscribe(fade =>
+            {
+                if (fade == "fadeOut")
+                    ui.GradationFadeOut(centerToOutGradationImage);
+                else
+                    ui.GradationFadeIn(centerToOutGradationImage);
+            })
+            .AddTo(this);
+    }
+
+    /// <summary>
+    /// イベント設定
+    /// </summary>
+    private void SetEvent()
+    {
+        ui.IsTutorialPlayingProp
+            .Subscribe(isTutorialPlaying =>
+            {
+                keyboardEnabled = !isTutorialPlaying;
+                rb.velocity = Vector2.zero;
+                stateMachine.ChangeState(idleState);
+                Debug.Log(isTutorialPlaying);
+            }
+            ).AddTo(this);
     }
 
     protected override void Update()

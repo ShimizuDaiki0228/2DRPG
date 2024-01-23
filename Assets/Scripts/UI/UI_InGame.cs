@@ -50,10 +50,10 @@ public class UI_InGame : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Mouse1) && skills.sword.swordUnlocked)
             SetCooldownOf(swordImage);
 
-        if (Input.GetKey(KeyCode.R) && skills.blackHole.blackHoleUnloced)
+        if (Input.GetKeyDown(KeyCode.R) && skills.blackHole.blackHoleUnloced)
             SetCooldownOf(blackHoleImage);
 
-        if (Input.GetKey(KeyCode.Alpha1) && Inventory.instance.GetEquipment(EquipmentType.Flask) != null)
+        if (Input.GetKeyDown(KeyCode.Alpha1) && Inventory.instance.GetEquipment(EquipmentType.Flask) != null)
             SetCooldownOf(flaskImage);
 
         CheckCooldownOf(dashImage, skills.dash.cooldown);

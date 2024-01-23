@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UniRx;
@@ -43,6 +44,16 @@ public class Inventory : MonoBehaviour, ISaveManager
     public List<ItemData> itemDataBase;
     public List<InventoryItem> loadedItems;
     public List<ItemData_Equipment> loadedEquipment;
+
+    /// <summary>
+    /// チュートリアルが終わっているかどうか
+    /// 終わっていない場合は新しく装備を身に付けた時にイベントが流れる
+    /// </summary>
+    private bool isTutorial;
+
+    private Subject<Unit> isCharacterUITutorialSubject = new Subject<Unit>();
+    public IObservable<Unit> IsCharacterUITutorialAsObservable
+        => isCharacterUITutorialSubject.AsObservable();
 
     //チュートリアルとして、最初のアイテムを二つ取得したかどうかを確認する
     public ReactiveProperty<int> firstItemDrop;
@@ -129,6 +140,12 @@ public class Inventory : MonoBehaviour, ISaveManager
         RemoveItem(_item);
 
         UpdateSlotUI();
+
+        if(!isTutorial)
+        {
+            isTutorial = true;
+            isCharacterUITutorialSubject.OnNext(Unit.Default);
+        }
     }
 
     public void UnequipItem(ItemData_Equipment itemToRemove)
@@ -354,6 +371,8 @@ public class Inventory : MonoBehaviour, ISaveManager
 
     public void LoadData(GameData _data)
     {
+        isTutorial = _data.isFirstTutorial;
+
         foreach(KeyValuePair<string, int> pair in _data.inventory)
         {
             foreach(var item in itemDataBase)

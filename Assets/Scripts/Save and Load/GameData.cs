@@ -28,10 +28,21 @@ public class GameData
     //メニューを開けるかどうか
     public bool isMenuUsing;
 
+    //各種UIを開けるかどうか
+    public bool IsOKeyUsing;
+    public bool IsPKeyUsing;
+    public bool IsKKeyUsing;
+    public bool IsLKeyUsing;
+
     public SerializableDictionary<string, float> volumeSettings;
 
     public GameData()
     {
+        IsOKeyUsing = false;
+        IsPKeyUsing = false;
+        IsKKeyUsing = false;
+        IsLKeyUsing = false;
+
         this.isMenuUsing = false;
         this.isFirstTutorial = false;
 

@@ -54,7 +54,6 @@ public class BlackholeSkill : Skill
         EffectDestroy(blackHoleAura);
 
         Vector3 blackHolePosition = newBlackHole.transform.position;
-        //blackHolePosition.y = 0;
 
         currentBlackHole = newBlackHole.GetComponent<BlackholeSkillController>();
 

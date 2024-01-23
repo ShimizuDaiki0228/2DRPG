@@ -10,6 +10,7 @@ using DG.Tweening;
 using System.Reflection;
 using UnityEngine.UI;
 using System.Linq;
+using System.Threading.Tasks;
 
 public class UI : MonoBehaviour, ISaveManager
 {
@@ -42,6 +43,14 @@ public class UI : MonoBehaviour, ISaveManager
     public UI_StatToolTip statToolTip;
     public UI_CraftWindow craftWindow;
 
+    /// <summary>
+    /// チュートリアルで最初に解禁させるスキル
+    /// これ以外のスキルを解放されるとイベントがうまくいかなくなるため
+    /// 現状他の金額を上げて、開放できないようにすることで解決
+    /// </summary>
+    [SerializeField]
+    private UI_SkillTreeSlot tutorialSkillSlot;
+
     [SerializeField] private TextMeshProUGUI instructionText;
     [SerializeField] private TextMeshProUGUI soundText;
     [SerializeField] private TextMeshProUGUI statusText;
@@ -73,7 +82,21 @@ public class UI : MonoBehaviour, ISaveManager
 
     KeyCode descriptionKeyCode = default;
 
-    private bool isTutorialDescription = false;
+    private bool isOKeyUsing = false;
+    private bool isPKeyUsing = false;
+    private bool isKKeyUsing = false;
+    private bool isLKeyUsing = false;
+
+    /// <summary>
+    /// 現在チュートリアルの説明中かどうか
+    /// </summary>
+    public ReactiveProperty<bool> IsTutorialPlayingProp = new ReactiveProperty<bool>(false);
+
+    /// <summary>
+    /// 説明画面が表示されているか
+    /// これが表示されている間はUIを変更できないように
+    /// </summary>
+    private bool isDescriptionUIDisplay = false;
 
     private void Awake()
     {
@@ -107,6 +130,24 @@ public class UI : MonoBehaviour, ISaveManager
                     
                 }
                 ).AddTo(this);
+
+            craftWindow.IsCraftUITutorialAsObservable
+                .Take(1)
+                .Subscribe(_ => 
+                    SwitchToSpecialDescriptionDisplay(2).Forget()
+                ).AddTo(this);
+
+            Inventory.instance.IsCharacterUITutorialAsObservable
+                .Take(1)
+                .Subscribe(_ => 
+                    SwitchToSpecialDescriptionDisplay(3).Forget()
+                ).AddTo(this);
+
+            tutorialSkillSlot.IsSkillUITutorialAsObservable
+                .Take(1)
+                .Subscribe(_ =>
+                    SwitchToSpecialDescriptionDisplay(4).Forget()
+                ).AddTo(this);
         }
 
         SpecialDescriptionManager.instance.OnMenuUsingAsObservable
@@ -121,16 +162,16 @@ public class UI : MonoBehaviour, ISaveManager
     {
         if (isMenuUsing)
         {
-            if (Input.GetKeyDown(KeyCode.O))
+            if (Input.GetKeyDown(KeyCode.O) && isOKeyUsing)
                 SwitchWithKeyTo(characterUI);
 
-            if (Input.GetKeyDown(KeyCode.P))
+            if (Input.GetKeyDown(KeyCode.P) && isPKeyUsing)
                 SwitchWithKeyTo(craftUI);
 
-            if (Input.GetKeyDown(KeyCode.K))
+            if (Input.GetKeyDown(KeyCode.K) && isKKeyUsing)
                 SwitchWithKeyTo(skillTreeUI);
 
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Input.GetKeyDown(KeyCode.L) && isLKeyUsing)
                 SwitchWithKeyTo(optionsUI);
         }
 
@@ -146,7 +187,25 @@ public class UI : MonoBehaviour, ISaveManager
     {
         isMenuUsing = false;
         AudioManager.instance.StopSFX(8);
+        await TalkUIDisplay();
 
+        SwitchWithKeyTo(descriptionUI);
+        DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
+        string description = DescriptionDefinition.GetDescriptionText(index);
+        descriptionText.text = "";
+
+        await DisplayText(description);
+        PressKeyInstruction();
+
+        GameManager.instance.PauseGame(true);
+    }
+
+    /// <summary>
+    /// プレイヤーが表示されて話すようにする
+    /// </summary>
+    /// <returns></returns>
+    private async Task TalkUIDisplay()
+    {
         talkScreenBackground.gameObject.SetActive(true);
         talkScreenPlayer.gameObject.SetActive(true);
 
@@ -170,16 +229,6 @@ public class UI : MonoBehaviour, ISaveManager
             );
 
         await fadeSequence.AsyncWaitForCompletion();
-
-        SwitchWithKeyTo(descriptionUI);
-        DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
-        string description = DescriptionDefinition.GetDescriptionText(index);
-        descriptionText.text = "";
-
-        await DisplayText(description);
-        PressKeyInstruction();
-
-        GameManager.instance.PauseGame(true);
     }
 
     private void PressKeyInstruction()
@@ -216,7 +265,10 @@ public class UI : MonoBehaviour, ISaveManager
     //何かオブジェクトではなく特別な場合に呼ばれる
     private async UniTask SwitchToSpecialDescriptionDisplay(int index)
     {
-        isTutorialDescription = true;
+        if(index == 1)
+            IsTutorialPlayingProp.Value = true;
+
+        await TalkUIDisplay();
         SwitchWithKeyTo(descriptionUI);
         DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
 
@@ -249,6 +301,11 @@ public class UI : MonoBehaviour, ISaveManager
         descriptionKeyCode = keyCode;
         pressKeyInstructionText.text = $"{keyInstruction}キーをクリックしてください";
 
+        if (keyInstruction == "O") isOKeyUsing = true;
+        else if(keyInstruction == "P") isPKeyUsing = true;
+        else if(keyInstruction == "K") isKKeyUsing = true;
+        else if(keyInstruction == "L") isLKeyUsing = true;
+
         pressKeyInstructionText.gameObject.SetActive(true);
         subscription = Observable.EveryUpdate()
             .Where(_ => Input.GetKeyDown(descriptionKeyCode))
@@ -265,9 +322,12 @@ public class UI : MonoBehaviour, ISaveManager
                 }
                 else
                 {
-                    if (!GameManager.instance.IsFirstTutorial)
-                        GameManager.instance.SetIsFirstTutorial();
+                    ///チュートリアル最後の項目
+                    ///これによってingameUIに戻れるようになる
+                    if(index == 4)
+                        IsTutorialPlayingProp.Value = false;
 
+                    HiddenTalkScreen().Forget();
                     SwitchToDescriptionHidden().Forget();
                 }
                 pressKeyInstructionText.gameObject.SetActive(false);
@@ -307,28 +367,33 @@ public class UI : MonoBehaviour, ISaveManager
     {
         AudioManager.instance.StopSFX(8);
 
-        for (int i = 0; i < transform.childCount; i++)
+        if(_menu == descriptionUI)
         {
-            //ゲームオブジェクトがアクティブ状態のときにfadeScreenの状態にするため
-            bool fadeScreen = transform.GetChild(i).GetComponent<UI_FadeScreen>() != null;
-
-            if (fadeScreen == false)
+            inGameUI.SetActive(false);
+        }
+        else
+        {
+            for (int i = 0; i < transform.childCount; i++)
             {
-                //現状だとdescriptionUIが消せないため個別で消すようにしたほうがいいかも
-                if(transform.GetChild(i).gameObject != descriptionUI)
+                //ゲームオブジェクトがアクティブ状態のときにfadeScreenの状態にするため
+                bool fadeScreen = transform.GetChild(i).GetComponent<UI_FadeScreen>() != null;
+
+                if (fadeScreen == false)
                 {
-                    transform.GetChild(i).gameObject.SetActive(false);
-                } 
+                    //現状だとdescriptionUIが消せないため個別で消すようにしたほうがいいかも
+                    if (transform.GetChild(i).gameObject != descriptionUI)
+                    {
+                        transform.GetChild(i).gameObject.SetActive(false);
+                    }
+                }
             }
-        }
 
-        if (_menu == descriptionUI)
-        {
-            talkScreenBackground.gameObject.SetActive(true);
-            talkScreenPlayer.gameObject.SetActive(true);
         }
-
+        
         transitionScreen.gameObject.SetActive(true);
+
+        talkScreenBackground.gameObject.SetActive(true);
+        talkScreenPlayer.gameObject.SetActive(true);
 
         if (_menu != null)
         {
@@ -349,6 +414,14 @@ public class UI : MonoBehaviour, ISaveManager
     {
         if(_menu != null && _menu.activeSelf)
         {
+            if (!GameManager.instance.IsFirstTutorial
+                && !IsTutorialPlayingProp.Value
+                && _menu != operationUI
+                && _menu != descriptionUI)
+            {
+                SwitchToSpecialDescriptionDisplay(5).Forget();
+                GameManager.instance.SetIsFirstTutorial();
+            }
             _menu.SetActive(false);
             CheckForInGameUI();
             return;
@@ -398,6 +471,11 @@ public class UI : MonoBehaviour, ISaveManager
                     item.LoadSlider(pair.Value);
             }
         }
+
+        isOKeyUsing = _data.IsOKeyUsing;
+        isPKeyUsing = _data.IsPKeyUsing;
+        isKKeyUsing = _data.IsKKeyUsing;
+        isLKeyUsing = _data.IsLKeyUsing;
     }
 
     public void SaveData(ref GameData _data)
@@ -408,6 +486,11 @@ public class UI : MonoBehaviour, ISaveManager
         {
             _data.volumeSettings.Add(item.parameter, item.slider.value);
         }
+
+        _data.IsOKeyUsing = isOKeyUsing;
+        _data.IsPKeyUsing = isPKeyUsing;
+        _data.IsKKeyUsing = isKKeyUsing;
+        _data.IsLKeyUsing = isLKeyUsing;
     }
 
     /// <summary>

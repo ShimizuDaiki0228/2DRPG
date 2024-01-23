@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UniRx;
+using System;
 
-public class UI_CraftWindow : MonoBehaviour
+public class UI_CraftWindow : MonoBehaviour, ISaveManager
 {
     [SerializeField] private TextMeshProUGUI itemName;
     [SerializeField] private TextMeshProUGUI itemDescription;
@@ -12,6 +14,25 @@ public class UI_CraftWindow : MonoBehaviour
     [SerializeField] private Button craftButton;
 
     [SerializeField] private Image[] materialImage;
+
+    /// <summary>
+    /// チュートリアルが終わっているかどうか
+    /// 終わっていない場合はCreate時にイベントが流れる
+    /// </summary>
+    private bool isTutorial;
+
+    private Subject<Unit> isCraftUITutorialSubject = new Subject<Unit>();
+    public IObservable<Unit> IsCraftUITutorialAsObservable
+        => isCraftUITutorialSubject.AsObservable();
+
+    public void LoadData(GameData _data)
+    {
+        isTutorial = _data.isFirstTutorial;
+    }
+
+    public void SaveData(ref GameData _data)
+    { 
+    }
 
     public void SetupCraftWindow(ItemData_Equipment _data)
     {
@@ -43,6 +64,17 @@ public class UI_CraftWindow : MonoBehaviour
         itemIcon.sprite = _data.itemIcon;
         itemName.text = _data.itemName;
         itemDescription.text = _data.GetDescription();
+
+        craftButton.OnClickAsObservable()
+            .Subscribe(_ =>
+            {
+                bool canCraft = Inventory.instance.CanCraft(_data, _data.craftingMaterials);
+                if (canCraft && !isTutorial) 
+                {
+                    isCraftUITutorialSubject.OnNext(Unit.Default);
+                }
+            }
+            ).AddTo(this);
 
         craftButton.onClick.AddListener(() => Inventory.instance.CanCraft(_data, _data.craftingMaterials));
     }

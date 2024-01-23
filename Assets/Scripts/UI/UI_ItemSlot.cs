@@ -12,6 +12,12 @@ public class UI_ItemSlot : MonoBehaviour, IPointerDownHandler, IPointerEnterHand
     protected UI ui;
     public InventoryItem item;
 
+    /// <summary>
+    /// チュートリアルが終わっているかどうか
+    /// 終わっていない場合はクリック時にイベントが流れる
+    /// </summary>
+    private bool isTutorial;
+
     protected virtual void Start()
     {
         ui = GetComponentInParent<UI>();
