@@ -2,41 +2,98 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UniRx;
+using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 
 public class UI_MainMenu : MonoBehaviour
 {
     [SerializeField] private string sceneName = "MainScene";
-    [SerializeField] private GameObject continueButton;
+    [SerializeField] private Button continueButton;
+    [SerializeField] private Button exitButton;
+    [SerializeField] private Button newGameButton;
     [SerializeField] private UI_FadeScreen fadeScreen;
+
+    private const float DELAY_START = 1.5f;
 
     private void Start()
     {
         if(SaveManager.instance.HasSaveData() == false)
-            continueButton.SetActive(false);
+            continueButton.gameObject.SetActive(false);
+
+        continueButton.OnClickAsObservable()
+            .Subscribe(_ =>
+                ContinueGame(continueButton)
+            ).AddTo(this);
+
+        exitButton.OnClickAsObservable()
+            .Subscribe(_ =>
+               ExitGame()
+            ).AddTo(this);
+
+        newGameButton.OnClickAsObservable()
+            .Subscribe(_ =>
+                NewGame(newGameButton)
+            ).AddTo(this);
     }
 
-    public void ContinueGame()
+    public void ContinueGame(Button button)
     {
-        StartCoroutine(LoadSceneWithFadeEffect(1.5f));
+        LoadSceneWithFadeEffect(button);
     }
 
-    public void NewGame()
+    public void NewGame(Button button)
     {
         SaveManager.instance.DeleteSaveData();
-        StartCoroutine(LoadSceneWithFadeEffect(1.5f));
+        LoadSceneWithFadeEffect(button);
     }
 
     public void ExitGame()
     {
-        Debug.Log("Exit game");
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+      Application.Quit();
+#endif
     }
 
-    IEnumerator LoadSceneWithFadeEffect(float _delay)
+    async void LoadSceneWithFadeEffect(Button button)
     {
+        AudioManager.instance.PlaySFX(40, null);
+        Sequence buttonClickSequence = ButtonClickAnimationSequence(button);
+        await buttonClickSequence.AsyncWaitForCompletion();
+
         fadeScreen.FadeOut();
 
-        yield return new WaitForSeconds(_delay);
+        await UniTask.WaitForSeconds(DELAY_START);
 
         SceneManager.LoadScene(sceneName);
+    }
+
+    /// <summary>
+    /// ボタンを押した時のアニメーションシーケンス
+    /// </summary>
+    /// <param name="button"></param>
+    /// <returns></returns>
+    private Sequence ButtonClickAnimationSequence(Button button)
+    {
+        Sequence sequence = DOTween.Sequence();
+
+        sequence
+            .Append(button.transform.DOScale(
+                    0.8f,
+                    0.3f
+                )
+                .SetEase(Ease.OutCirc)
+            )
+            .Append(button.transform.DOScale(
+                    1,
+                    0.3f
+                )
+                .SetEase(Ease.OutCirc)
+            );
+
+        return sequence;
     }
 }
