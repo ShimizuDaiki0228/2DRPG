@@ -29,7 +29,6 @@ public class UI_CraftList : MonoBehaviour, IPointerDownHandler
             Craft_UI.instance.craftUIActiveAsObservable
                 .Subscribe(isActive =>
                 {
-                    Debug.Log(isActive);
                     Debug.Log(GameManager.instance.IsFirstTutorial);
                     if (isActive && !GameManager.instance.IsFirstTutorial)
                     {

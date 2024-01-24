@@ -169,7 +169,6 @@ public class Player : Entity
                 keyboardEnabled = !isTutorialPlaying;
                 rb.velocity = Vector2.zero;
                 stateMachine.ChangeState(idleState);
-                Debug.Log(isTutorialPlaying);
             }
             ).AddTo(this);
     }

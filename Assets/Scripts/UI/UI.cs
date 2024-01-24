@@ -42,11 +42,21 @@ public class UI : MonoBehaviour, ISaveManager
     [SerializeField] private GameObject inGameUI;
     [SerializeField] private GameObject operationUI;
     [SerializeField] private GameObject descriptionUI;
+    [SerializeField] private GameObject tutorialInstructionArrowImage;
 
     public UI_SkillToolTip skillToolTip;
     public UI_ItemToolTip itemToolTip;
     public UI_StatToolTip statToolTip;
     public UI_CraftWindow craftWindow;
+
+    /// <summary>
+    /// TutorialInstructionArrowImageの位置
+    /// </summary>
+    [SerializeField] private Transform arrowCraftUIPos;
+    [SerializeField] private Transform arrowCharacterUIPos;
+    [SerializeField] private Transform arrowSkillTreeUIPos;
+
+    private Sequence arrowImageSequence = DOTween.Sequence();
 
     /// <summary>
     /// チュートリアルで最初に解禁させるスキル
@@ -387,6 +397,8 @@ public class UI : MonoBehaviour, ISaveManager
         if(index == 1)
             IsTutorialPlayingProp.Value = true;
 
+        arrowImageSequence.Kill();
+
         await TalkUIDisplay();
         SwitchWithKeyTo(descriptionUI);
         DescriptionManager.instance.descriptionUIAnimator.SetTrigger("Display");
@@ -486,13 +498,18 @@ public class UI : MonoBehaviour, ISaveManager
         SwitchWithKeyTo(descriptionUI);
     }
 
-    public void SwitchTo(GameObject _menu)
+    /// <summary>
+    /// UIの切り替えを行う
+    /// </summary>
+    /// <param name="uiTutorial">チュートリアルかつ、UIの説明をしているか</param>
+    public void SwitchTo(GameObject _menu, bool uiTutorial = false)
     {
         AudioManager.instance.StopSFX(8);
 
         if(_menu == descriptionUI)
         {
             inGameUI.SetActive(false);
+            tutorialInstructionArrowImage.SetActive(false);
         }
         else
         {
@@ -524,6 +541,9 @@ public class UI : MonoBehaviour, ISaveManager
             _menu.SetActive(true);
         }
 
+        if(uiTutorial)
+            tutorialInstructionArrowImage.gameObject.SetActive(true);
+
         if(GameManager.instance != null)
         {
             if (_menu == inGameUI)
@@ -535,7 +555,7 @@ public class UI : MonoBehaviour, ISaveManager
 
     public void SwitchWithKeyTo(GameObject _menu)
     {
-        if(_menu != null && _menu.activeSelf)
+        if (_menu != null && _menu.activeSelf)
         {
             if (!GameManager.instance.IsFirstTutorial
                 && !IsTutorialPlayingProp.Value
@@ -550,15 +570,42 @@ public class UI : MonoBehaviour, ISaveManager
             return;
         }
 
+        if(IsTutorialPlayingProp.Value)
+        {
+            if (_menu == craftUI)
+                tutorialInstructionArrowImage.transform.position = arrowCraftUIPos.position;
+            else if (_menu == skillTreeUI)
+                tutorialInstructionArrowImage.transform.position = arrowSkillTreeUIPos.position;
+            else if (_menu == characterUI)
+                tutorialInstructionArrowImage.transform.position = arrowCharacterUIPos.position;
+            else
+            {
+                SwitchTo(_menu);
+                return;
+            }
+
+            arrowImageSequence = AnimationUtility.InstructionArrowSequence(tutorialInstructionArrowImage,
+                                                      tutorialInstructionArrowImage.transform);
+
+            SwitchTo(_menu, true);
+            return;
+        }
+
         SwitchTo(_menu);
     }
 
     private void CheckForInGameUI()
     {
-        for(int i = 0; i < transform.childCount; i++)
+
+        for (int i = 0; i < transform.childCount; i++)
         {
-            if (transform.GetChild(i).gameObject.activeSelf && 
-                (transform.GetChild(i).GetComponent<UI_FadeScreen>() == null && transform.GetChild(i).GetComponent<TransitionScreen>() == null))
+            GameObject UIChild = transform.GetChild(i).gameObject;
+
+            if (UIChild.activeSelf && 
+                (UIChild.GetComponent<UI_FadeScreen>() == null 
+                 && UIChild.GetComponent<TransitionScreen>() == null)
+                 && UIChild != talkScreenBackgroundGameObject
+                 && UIChild != talkScreenPlayerGameObject)
                 return;
         }
 
