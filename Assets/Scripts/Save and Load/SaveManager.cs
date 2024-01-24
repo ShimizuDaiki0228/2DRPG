@@ -8,7 +8,7 @@ public class SaveManager : MonoBehaviour
     public static SaveManager instance;
 
     [SerializeField] private string fileName;
-    [SerializeField] private string filePath = "idbfs/willdev022348098jsdhue";
+    [SerializeField] private string filePath = "idbfs/willdev022348098sdaue";
     [SerializeField] private bool encryptData;
     private GameData gameData;
     private List<ISaveManager> saveManagers;
@@ -27,11 +27,12 @@ public class SaveManager : MonoBehaviour
             Destroy(instance);
         else
             instance = this;
+
+        dataHandler = new FileDataHandler(filePath, fileName, encryptData);
     }
 
     private void Start()
     {
-        dataHandler = new FileDataHandler(filePath, fileName, encryptData);
         saveManagers = FindAllSaveManager();
 
         LoadGame();

@@ -11,9 +11,14 @@ using System.Reflection;
 using UnityEngine.UI;
 using System.Linq;
 using System.Threading.Tasks;
+using Cinemachine;
 
 public class UI : MonoBehaviour, ISaveManager
 {
+    [Header("Virtual Camera")]
+    [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    private CinemachineBasicMultiChannelPerlin noise;
+
     [Header("Transition screen")]
     [SerializeField] private Image transitionScreenImage;
     [SerializeField] private TransitionScreen transitionScreen;
@@ -93,17 +98,17 @@ public class UI : MonoBehaviour, ISaveManager
     public ReactiveProperty<bool> IsTutorialPlayingProp = new ReactiveProperty<bool>(false);
 
     /// <summary>
-    /// 説明画面が表示されているか
-    /// これが表示されている間はUIを変更できないように
-    /// </summary>
-    private bool isDescriptionUIDisplay = false;
-
-    /// <summary>
     /// 壊せる壁、実際には上に移動する
     /// チュートリアル後に動かす
     /// </summary>
     [SerializeField]
     private GameObject canBrokenWall;
+
+    /// <summary>
+    /// canBrokenWallが破壊されたかどうか
+    /// 前回のセーブデータで破壊されている場合は表示しないように
+    /// </summary>
+    private bool isBrokenWallDestroy;
 
     /// <summary>
     /// canBrokenWallが移動するときに生成するエフェクト
@@ -117,13 +122,37 @@ public class UI : MonoBehaviour, ISaveManager
     [SerializeField]
     private GameObject dustFinishFXPrefab;
 
+    /// <summary>
+    /// カメラを揺らすときの値
+    /// </summary>
+    private ReactiveProperty<float> amplitudeGainProp = new ReactiveProperty<float>(0);
+    private ReactiveProperty<float> frequencyGainProp  = new ReactiveProperty<float>(0);
+
+    /// <summary>
+    /// noiseのそれぞれの値の最大値
+    /// </summary>
+    private const float MAX_AMPLITUDEGAIN = 1;
+    private const float MAX_FREQUENCYGAIN = 5;
+
+    /// <summary>
+    /// カメラの揺れが最大になるまでにかかる時間
+    /// </summary>
+    private const float MAX_FREQUENCY_DURATION = 0.5f;
+
+    /// <summary>
+    /// カメラの揺れが0になるまでにかかる時間
+    /// </summary>
+    private const float ZERO_FREQUENCY_DURATION = 2.5f;
+
     private void Awake()
     {
         fadeScreen.gameObject.SetActive(true);
+
+        noise = virtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
 
-    async void Start()
+    void Start()
     {
         pressKeyInstructionText.gameObject.SetActive(false);
 
@@ -132,6 +161,14 @@ public class UI : MonoBehaviour, ISaveManager
         itemToolTip.gameObject.SetActive(false);
         statToolTip.gameObject.SetActive(false);
 
+        SetEvent();
+    }
+
+    /// <summary>
+    /// イベント設定
+    /// </summary>
+    private void SetEvent()
+    {
         //説明を表示させるためのトリガーとなるオブジェクトに触れるとUIが表示される処理を購読
         DescriptionManager.instance.OnDescriptionDisplayObjectAsObservable
             .Subscribe(index =>
@@ -139,26 +176,26 @@ public class UI : MonoBehaviour, ISaveManager
                 DisplayTalkScreen(index).Forget();
             }).AddTo(this);
 
-        if(!GameManager.instance.IsFirstTutorial)
+        if (!GameManager.instance.IsFirstTutorial)
         {
             GameManager.instance.OnFisrtTutorialAsObservable
                 .Take(1)
                 .Subscribe(index =>
                 {
                     SwitchToSpecialDescriptionDisplay(index).Forget();
-                    
+
                 }
                 ).AddTo(this);
 
             craftWindow.IsCraftUITutorialAsObservable
                 .Take(1)
-                .Subscribe(_ => 
+                .Subscribe(_ =>
                     SwitchToSpecialDescriptionDisplay(2).Forget()
                 ).AddTo(this);
 
             Inventory.instance.IsCharacterUITutorialAsObservable
                 .Take(1)
-                .Subscribe(_ => 
+                .Subscribe(_ =>
                     SwitchToSpecialDescriptionDisplay(3).Forget()
                 ).AddTo(this);
 
@@ -175,25 +212,11 @@ public class UI : MonoBehaviour, ISaveManager
                 isMenuUsing = true
             ).AddTo(this);
 
-        GameObject dustFX = Instantiate(dustFXPrefab,
-                                            dustFXPrefab.transform.position,
-                                            Quaternion.identity);
-        await canBrokenWall.transform.DOMoveY(7, 3)
-            .SetEase(Ease.OutCubic)
-            .ToUniTask();
+        amplitudeGainProp
+            .Subscribe(amplitudeGain => noise.m_AmplitudeGain = amplitudeGain).AddTo(this);
 
-        Destroy(canBrokenWall);
-        Destroy(dustFX);
-
-        GameObject dustFinishFX = Instantiate(dustFinishFXPrefab,
-                                              dustFinishFXPrefab.transform.position,
-                                              Quaternion.identity);
-
-        ParticleSystem dustFinishFXParticleSystem
-            = dustFinishFX.GetComponent<ParticleSystem>();
-
-        if(dustFinishFXParticleSystem != null)
-            Destroy(dustFinishFX, dustFinishFXParticleSystem.main.duration);
+        frequencyGainProp
+            .Subscribe(frequencyGain => noise.m_FrequencyGain = frequencyGain).AddTo(this);
     }
 
     // Update is called once per frame
@@ -301,26 +324,60 @@ public class UI : MonoBehaviour, ISaveManager
 
         if(isTutorial)
         {
-            GameObject dustFX = Instantiate(dustFXPrefab,
-                                            dustFXPrefab.transform.position,
-                                            Quaternion.identity);
-            await  canBrokenWall.transform.DOMoveY(7, 3)
-                .SetEase(Ease.OutCubic)
-                .ToUniTask();
-
-            Destroy(canBrokenWall);
-            Destroy(dustFX);
-
-            GameObject dustFinishFX = Instantiate(dustFinishFXPrefab,
-                                                  dustFinishFXPrefab.transform.position,
-                                                  Quaternion.identity);
-
-            ParticleSystem dustFinishFXParticleSystem
-            = dustFinishFX.GetComponent<ParticleSystem>();
-
-            if (dustFinishFXParticleSystem != null)
-                Destroy(dustFinishFX, dustFinishFXParticleSystem.main.duration);
+            canBrokenWallMove().Forget();
         }
+    }
+
+    /// <summary>
+    /// canBrokenWallを動かす
+    /// チュートリアル後
+    /// </summary>
+    /// <returns></returns>
+    private async UniTask canBrokenWallMove()
+    {
+        isBrokenWallDestroy = true;
+
+        DOTween.To(() => amplitudeGainProp.Value, x 
+            => amplitudeGainProp.Value = x,
+            MAX_AMPLITUDEGAIN, MAX_FREQUENCY_DURATION);
+        DOTween.To(() => frequencyGainProp.Value, x 
+            => frequencyGainProp.Value = x,
+            MAX_FREQUENCYGAIN, MAX_FREQUENCY_DURATION);
+
+        GameObject dustFX = Instantiate(dustFXPrefab,
+                                                    dustFXPrefab.transform.position,
+                                                    Quaternion.identity);
+
+        Sequence sequence = DOTween.Sequence();
+
+        sequence
+            .Append(canBrokenWall.transform.DOMoveY(7, 5)
+                    .SetEase(Ease.OutCirc)
+            )
+            .AppendInterval(2)
+            .Join(DOTween.To(() => amplitudeGainProp.Value, x
+                  => amplitudeGainProp.Value = x,
+                  0, ZERO_FREQUENCY_DURATION)
+            )
+            .Join(DOTween.To(() => frequencyGainProp.Value, x
+                  => frequencyGainProp.Value = x,
+                  0, ZERO_FREQUENCY_DURATION)
+            );
+
+        await sequence.AsyncWaitForCompletion();
+
+        Destroy(canBrokenWall);
+        Destroy(dustFX);
+
+        GameObject dustFinishFX = Instantiate(dustFinishFXPrefab,
+                                              dustFinishFXPrefab.transform.position,
+                                              Quaternion.identity);
+
+        ParticleSystem dustFinishFXParticleSystem
+        = dustFinishFX.GetComponent<ParticleSystem>();
+
+        if (dustFinishFXParticleSystem != null)
+            Destroy(dustFinishFX, dustFinishFXParticleSystem.main.duration);
     }
 
     //説明のUIを表示
@@ -542,6 +599,10 @@ public class UI : MonoBehaviour, ISaveManager
         isPKeyUsing = _data.IsPKeyUsing;
         isKKeyUsing = _data.IsKKeyUsing;
         isLKeyUsing = _data.IsLKeyUsing;
+
+        isBrokenWallDestroy = _data.IsBrokenWallDestroyed;
+        if (isBrokenWallDestroy)
+            Destroy(canBrokenWall);
     }
 
     public void SaveData(ref GameData _data)
@@ -557,6 +618,8 @@ public class UI : MonoBehaviour, ISaveManager
         _data.IsPKeyUsing = isPKeyUsing;
         _data.IsKKeyUsing = isKKeyUsing;
         _data.IsLKeyUsing = isLKeyUsing;
+
+        _data.IsBrokenWallDestroyed = isBrokenWallDestroy;
     }
 
     /// <summary>

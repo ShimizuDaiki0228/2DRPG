@@ -6309,8 +6309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: MainScene
   continueButton: {fileID: 1486554645}
-  exitButton: {fileID: 0}
-  newGameButton: {fileID: 0}
+  exitButton: {fileID: 859857858}
+  newGameButton: {fileID: 747262230}
   fadeScreen: {fileID: 1825892605}
 --- !u!114 &1607968480
 MonoBehaviour:

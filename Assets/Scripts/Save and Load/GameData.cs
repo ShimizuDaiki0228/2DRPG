@@ -34,10 +34,17 @@ public class GameData
     public bool IsKKeyUsing;
     public bool IsLKeyUsing;
 
+    /// <summary>
+    /// canBrokenWall‚ª”j‰ó‚³‚ê‚½‚©‚Ç‚¤‚©
+    /// </summary>
+    public bool IsBrokenWallDestroyed;
+
     public SerializableDictionary<string, float> volumeSettings;
 
     public GameData()
     {
+        IsBrokenWallDestroyed = false;
+
         IsOKeyUsing = false;
         IsPKeyUsing = false;
         IsKKeyUsing = false;
